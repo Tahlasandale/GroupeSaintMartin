@@ -32,6 +32,10 @@
         "googleId": {
           "type": "string",
           "description": "User's google ID, if they signed up using google."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Indicates if the user has administrative privileges."
         }
       },
       "required": [

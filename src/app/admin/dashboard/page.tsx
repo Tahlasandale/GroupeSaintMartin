@@ -3,10 +3,10 @@
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Leaf } from 'lucide-react';
+import { Leaf, Shield } from 'lucide-react';
 import { doc } from 'firebase/firestore';
 
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
@@ -23,13 +23,13 @@ export default function DashboardPage() {
     }
 
     if (!isUserDataLoading && userData) {
-      if ((userData as any).isAdmin) {
-        router.push('/admin/dashboard');
+      if (!(userData as any).isAdmin) {
+        router.push('/dashboard');
       }
     }
   }, [user, isUserLoading, userData, isUserDataLoading, router]);
 
-  if (isUserLoading || isUserDataLoading || !user) {
+  if (isUserLoading || isUserDataLoading || !userData || !(userData as any).isAdmin) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
         <Leaf className="h-8 w-8 animate-spin text-primary" />
@@ -40,9 +40,12 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold">Welcome to your Dashboard</h1>
+        <div className="flex justify-center items-center mb-4">
+            <Shield className="h-12 w-12 text-primary" />
+        </div>
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="mt-2 text-muted-foreground">
-          You are signed in as {user.email || 'Anonymous'}.
+          Welcome, {user?.email || 'Admin'}. You have special privileges.
         </p>
       </div>
     </div>

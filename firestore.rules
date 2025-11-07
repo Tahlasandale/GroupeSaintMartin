@@ -7,14 +7,14 @@
  * a clear and secure data hierarchy.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile information.
+ * - /users/{userId}: Stores user profile information, including an isAdmin flag.
  * - /users/{userId}/dashboards/{dashboardId}: Stores dashboards owned by the user.
  * - /pre-registrations/{preRegistrationId}: Stores emails from the pre-registration form.
  *
  * Key Security Decisions:
  * - Users can only read and write their own user document and their dashboards.
+ * - The `isAdmin` flag is read-only for clients and can only be changed from the server-side.
  * - Listing all users is disallowed to protect user privacy.
- * - Read-only collections are not applicable in this data model.
  * - Anyone can write to the pre-registrations collection, but no one can read from it.
  *
  * Denormalization for Authorization:
@@ -29,25 +29,16 @@ service cloud.firestore {
     /**
      * @description Enforces that only the authenticated user can manage their own user document.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user creates their own user document with matching userId.
-     *    Request: auth.uid = "user123", document.id = "user123"
+     * @allow (create) - Authenticated user creates their own user document. `isAdmin` defaults to false.
      * @allow (get) - Authenticated user reads their own user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
-     * @allow (update) - Authenticated user updates their own user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
+     * @allow (update) - Authenticated user updates their own user document, but cannot change `isAdmin`.
      * @allow (delete) - Authenticated user deletes their own user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
-     * @deny (create) - Authenticated user attempts to create a user document with a mismatched userId.
-     *    Request: auth.uid = "user123", document.id = "user456"
-     * @deny (get) - Authenticated user attempts to read another user's document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456"
-     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id && request.resource.data.isAdmin == resource.data.isAdmin;
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
@@ -55,18 +46,9 @@ service cloud.firestore {
      * @description Enforces that only the authenticated user can manage their own dashboards.
      * @path /users/{userId}/dashboards/{dashboardId}
      * @allow (create) - Authenticated user creates a dashboard under their user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1", request.resource.data.userId = "user123"
      * @allow (get) - Authenticated user reads a dashboard under their user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
      * @allow (update) - Authenticated user updates a dashboard under their user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
      * @allow (delete) - Authenticated user deletes a dashboard under their user document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
-     * @deny (create) - Authenticated user attempts to create a dashboard under another user's document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456/dashboards/dash1", request.resource.data.userId = "user456"
-     * @deny (get) - Authenticated user attempts to read a dashboard under another user's document.
-     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456/dashboards/dash1"
-     * @principle Enforces document ownership for all operations within the user's data tree.
      */
     match /users/{userId}/dashboards/{dashboardId} {
       allow get: if isSignedIn() && isOwner(userId);
@@ -80,7 +62,6 @@ service cloud.firestore {
      * @description Allows public write access for pre-registration emails, but denies all read access.
      * @path /pre-registrations/{preRegistrationId}
      * @allow (create) - Anyone can submit their email for pre-registration.
-     *    Request: path = "/databases/(default)/documents/pre-registrations/some-id", request.resource.data.email = "test@example.com"
      * @deny (read, list, update, delete) - No one can read, update, or delete pre-registration entries.
      */
     match /pre-registrations/{preRegistrationId} {
