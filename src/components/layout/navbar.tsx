@@ -28,12 +28,14 @@ export function Navbar() {
         {!user && (
           <>
             <Button variant="outline" asChild size="sm">
-                <Link href="/login" prefetch={false}>
+              <Link href="/login" prefetch={false}>
                 Sign In
-                </Link>
+              </Link>
             </Button>
             <Button asChild size="sm">
-              <Link href="/login" prefetch={false}>Sign Up</Link>
+              <Link href="/login" prefetch={false}>
+                Sign Up
+              </Link>
             </Button>
           </>
         )}
