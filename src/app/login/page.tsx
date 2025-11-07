@@ -4,7 +4,6 @@ import { AuthForm } from '@/components/auth-form';
 import { useUser } from '@/firebase';
 import { Leaf } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
@@ -31,10 +30,6 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-lg font-bold text-primary" prefetch={false}>
-        <Leaf className="h-6 w-6" />
-        <span className="font-headline">AuthZen</span>
-      </Link>
       <AuthForm />
     </main>
   );
