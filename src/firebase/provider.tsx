@@ -65,14 +65,17 @@ const createUserDocumentIfNeeded = async (firestore: Firestore, user: User) => {
   const userDoc = await getDoc(userRef);
 
   if (!userDoc.exists()) {
-    const newUser = {
+    const googleId = user.providerData.find(p => p.providerId === 'google.com')?.uid;
+    const newUser: any = {
       id: user.uid,
       email: user.email,
       name: user.displayName,
       signUpDate: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
-      googleId: user.providerData.find(p => p.providerId === 'google.com')?.uid,
     };
+    if (googleId) {
+      newUser.googleId = googleId;
+    }
     // Use the non-blocking fire-and-forget function
     setDocumentNonBlocking(userRef, newUser, { merge: false });
   } else {
