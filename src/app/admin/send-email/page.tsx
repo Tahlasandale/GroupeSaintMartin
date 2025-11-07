@@ -31,18 +31,8 @@ const emailSchema = z.object({
 
 async function getPreRegisteredEmails(db: Firestore): Promise<string[]> {
   const preRegistrationsRef = collection(db, 'pre-registrations');
-  try {
-    const querySnapshot = await getDocs(preRegistrationsRef);
-    return querySnapshot.docs.map((doc) => doc.data().email);
-  } catch (error: any) {
-    const permissionError = new FirestorePermissionError({
-        path: preRegistrationsRef.path,
-        operation: 'list',
-    });
-    errorEmitter.emit('permission-error', permissionError);
-    // Re-throw the original error to notify the caller of the failure.
-    throw error;
-  }
+  const querySnapshot = await getDocs(preRegistrationsRef);
+  return querySnapshot.docs.map((doc) => doc.data().email);
 }
 
 export default function SendEmailPage() {
