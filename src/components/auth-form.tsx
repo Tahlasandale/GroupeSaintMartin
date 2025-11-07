@@ -85,24 +85,37 @@ export function AuthForm() {
 
   const isLogin = formType === 'login';
 
+  const handleError = (error: any) => {
+    let description = "An unexpected error occurred.";
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          description = 'Invalid email or password. Please try again.';
+          break;
+        case 'auth/email-already-in-use':
+          description = 'This email is already in use. Please try logging in.';
+          break;
+        case 'auth/weak-password':
+          description = 'The password is too weak. Please use a stronger password.';
+          break;
+        default:
+          description = error.message;
+      }
+    }
+    toast({
+      variant: 'destructive',
+      title: 'Authentication Error',
+      description: description,
+    });
+    setIsLoading(false);
+  };
+
   const onSubmit = async (values: z.infer<typeof loginSchema> | z.infer<typeof signupSchema>) => {
     setIsLoading(true);
-    try {
-      if (isLogin) {
-        initiateEmailSignIn(auth, values.email, values.password);
-      } else {
-        initiateEmailSignUp(auth, values.email, (values as z.infer<typeof signupSchema>).password);
-      }
-      // Non-blocking, relying on onAuthStateChanged to redirect
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Authentication Error',
-        description: error.message,
-      });
-    } finally {
-      // Because sign in is non-blocking, we don't set loading to false here.
-      // The redirect will happen when user state changes.
+    if (isLogin) {
+      initiateEmailSignIn(auth, values.email, values.password, handleError);
+    } else {
+      initiateEmailSignUp(auth, values.email, (values as z.infer<typeof signupSchema>).password, handleError);
     }
   };
 
@@ -110,16 +123,10 @@ export function AuthForm() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      // The signInWithPopup promise will resolve after the user signs in
       await signInWithPopup(auth, provider);
-      // The onAuthStateChanged listener in FirebaseProvider will handle user creation
-      // and redirect logic will be triggered by the useUser hook.
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Google Sign-In Error',
-        description: error.message,
-      });
+      handleError(error)
+    } finally {
       setIsGoogleLoading(false);
     }
   };
