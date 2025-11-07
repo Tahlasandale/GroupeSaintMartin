@@ -20,7 +20,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Button asChild size="lg">
-                <Link href="/login" prefetch={false}>
+                <Link href="/dashboard" prefetch={false}>
                   Get Started
                 </Link>
               </Button>
