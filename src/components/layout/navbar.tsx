@@ -33,13 +33,18 @@ export function Navbar() {
             Dashboard
           </Link>
         </Button>
+        <Button variant="link" asChild size="sm">
+          <Link href="/template" prefetch={false}>
+            Template
+          </Link>
+        </Button>
         {user ? (
           <Button variant="ghost" size="sm" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
         ) : (
-          <Button asChild size="sm">
+          <Button asChild size="sm" variant="default">
             <Link href="/login" prefetch={false}>
               Sign In
             </Link>
