@@ -1,12 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { Leaf } from 'lucide-react';
+import { Leaf, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export function Navbar() {
   const { user } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
 
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center bg-background shadow-sm">
@@ -25,14 +38,17 @@ export function Navbar() {
             Dashboard
           </Link>
         </Button>
-        {!user && (
-          <>
-            <Button asChild size="sm">
-              <Link href="/login" prefetch={false}>
-                Sign In
-              </Link>
-            </Button>
-          </>
+        {user ? (
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+        ) : (
+          <Button asChild size="sm">
+            <Link href="/login" prefetch={false}>
+              Sign In
+            </Link>
+          </Button>
         )}
       </nav>
     </header>

@@ -1,15 +1,12 @@
 'use client';
 
-import { useAuth, useUser } from '@/firebase';
-import { Button } from '@/components/ui/button';
+import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { signOut } from 'firebase/auth';
 import { Leaf } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, isUserLoading } = useUser();
-  const auth = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -18,25 +15,12 @@ export default function DashboardPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      router.push('/');
-    } catch (error) {
-      console.error('Error signing out: ', error);
-    }
-  };
-
-  if (isUserLoading) {
+  if (isUserLoading || !user) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
         <Leaf className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (!user) {
-    return null; // or a redirect component
   }
 
   return (
@@ -46,9 +30,6 @@ export default function DashboardPage() {
         <p className="mt-2 text-muted-foreground">
           You are signed in as {user.email || 'Anonymous'}.
         </p>
-        <Button onClick={handleSignOut} className="mt-6">
-          Sign Out
-        </Button>
       </div>
     </div>
   );
