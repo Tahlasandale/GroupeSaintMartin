@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Leaf, LogOut, Menu } from 'lucide-react';
+import { Leaf, LogOut, Menu, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -88,6 +88,12 @@ export function Navbar() {
               <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
+              <Button variant="ghost" asChild className="justify-start">
+                <Link href="/" prefetch={false} onClick={handleLinkClick}>
+                  <Home className="mr-2 h-4 w-4" />
+                  Home
+                </Link>
+              </Button>
               {navLinks}
             </nav>
           </SheetContent>
