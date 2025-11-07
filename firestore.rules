@@ -15,7 +15,7 @@
  * - Users can only read and write their own user document and their dashboards.
  * - The `isAdmin` flag is read-only for clients and can only be changed from the server-side.
  * - Listing all users is disallowed to protect user privacy.
- * - Anyone can write to the pre-registrations collection, but no one can read from it.
+ * - Anyone can write to the pre-registrations collection, but only admins can read from it.
  *
  * Denormalization for Authorization:
  * - The `Dashboard` entity contains a `userId` field, denormalizing the ownership
@@ -38,7 +38,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin;
+      allow update: if isSignedIn() && isOwner(userId) && !('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin;
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
@@ -59,13 +59,15 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows public write access for pre-registration emails, but denies all read access.
+     * @description Allows public write access for pre-registration emails, but only allows admins to read.
      * @path /pre-registrations/{preRegistrationId}
+     * @allow (list, get) - Only administrators can read the pre-registration entries.
      * @allow (create) - Anyone can submit their email for pre-registration.
-     * @deny (read, list, update, delete) - No one can read, update, or delete pre-registration entries.
+     * @deny (update, delete) - No one can update or delete pre-registration entries.
      */
     match /pre-registrations/{preRegistrationId} {
-      allow read, update, delete: if false;
+      allow list, get: if isAdmin();
+      allow update, delete: if false;
       allow create: if isValidPreRegistrationRequest();
     }
   }
@@ -87,6 +89,14 @@ service cloud.firestore {
    */
   function isOwner(userId) {
     return request.auth.uid == userId;
+  }
+
+  /**
+   * @description Checks if the authenticated user is an administrator.
+   * @returns {boolean} True if the user is an admin, false otherwise.
+   */
+  function isAdmin() {
+    return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
   }
 
   /**
