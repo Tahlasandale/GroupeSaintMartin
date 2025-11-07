@@ -19,6 +19,7 @@ export async function sendEmail({ to, subject, text, html }: MailOptions) {
 
   // If the SendGrid API key is not set, simulate email sending in non-production environments
   if (!process.env.SENDGRID_API_KEY) {
+    // In development, log the email and return a resolved promise to simulate success.
     if (process.env.NODE_ENV !== 'production') {
       console.log(`
       ====================
@@ -30,8 +31,8 @@ export async function sendEmail({ to, subject, text, html }: MailOptions) {
       Body (HTML): ${html}
       ====================
       `);
-      // Return successfully without actually sending an email.
-      return;
+      // Return a resolved promise to prevent throwing an error in the calling code.
+      return Promise.resolve();
     } else {
       // In production, throw an error if not configured.
       console.error('CRITICAL: SendGrid API Key is not configured for production environment.');
