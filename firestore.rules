@@ -39,7 +39,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId) && !('isAdmin' in request.resource.data);
+      allow update: if isUpdatingOwnProfileSafely(userId);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
@@ -64,7 +64,7 @@ service cloud.firestore {
      * @path /pre-registrations/{preRegistrationId}
      * @allow (list, get) - Only signed-in users can read the pre-registration entries.
      * @allow (update, delete) - No one can update or delete pre-registration entries.
-     * @allow (create) - Anyone can submit their email for pre-registration.
+     * @allow (create) - if isValidPreRegistrationRequest();
      */
     match /pre-registrations/{preRegistrationId} {
       allow list, get: if isSignedIn();
@@ -90,6 +90,18 @@ service cloud.firestore {
    */
   function isOwner(userId) {
     return request.auth.uid == userId;
+  }
+  
+  /**
+   * @description Validates a safe profile update by ensuring the user is the owner
+   * and is not attempting to change the 'isAdmin' status.
+   * @param {string} userId - The user's ID.
+   * @returns {boolean} True if the update is safe.
+   */
+  function isUpdatingOwnProfileSafely(userId) {
+    let isOwner = request.auth.uid == userId;
+    let isChangingAdminStatus = request.resource.data.isAdmin != resource.data.isAdmin;
+    return isOwner && !isChangingAdminStatus;
   }
 
   /**
