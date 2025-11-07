@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
+import { sendEmail } from '@/lib/email';
 
 const preRegistrationSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -52,17 +53,30 @@ export default function PreRegistrationPage() {
         email: values.email,
         createdAt: new Date().toISOString(),
       });
+      
+      // Send confirmation email
+      await sendEmail({
+        to: values.email,
+        subject: 'Thank you for pre-registering!',
+        text: 'You are on the list! We will notify you when we launch.',
+        html: '<strong>You are on the list!</strong> We will notify you when we launch.',
+      });
+
       setIsSubmitted(true);
       toast({
         title: 'Registration successful!',
-        description: 'Thank you for your interest. We will keep you informed.',
+        description: 'Thank you for your interest. We have sent you a confirmation email.',
       });
     } catch (error) {
       console.error(error);
+      const errorMessage = error instanceof Error && error.message === 'Failed to send email'
+        ? 'We could not send a confirmation email.'
+        : 'We could not save your email. Please try again.';
+
       toast({
         variant: 'destructive',
         title: 'An error occurred',
-        description: 'We could not save your email. Please try again.',
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
