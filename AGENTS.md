@@ -1,48 +1,27 @@
 # AGENTS.md
 
 ## Build/Lint/Test Commands
-- `npm run dev` - Start development server with Turbopack on port 9002
+- `npm run dev` - Development server (port 9002)
 - `npm run build` - Production build
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - TypeScript type checking
+- `npm run lint` - ESLint
+- `npm run typecheck` - TypeScript check
+- `npm run genkit:dev` - GenAI dev server
 - No test framework configured
 
+## Windsurf Workflows
+- `.windsurf/workflows/giiit.md` - Auto-commit workflow
+
+## Development Setup
+1. `npm install`
+2. Copy `.env.local.example` to `.env.local`
+3. `npm run dev`
+4. For AI: `npm run genkit:dev`
+
 ## Code Style Guidelines
-
-### TypeScript
-- Strict mode enabled
-- Use explicit types for function parameters and return values
-- Prefer interfaces over types for object shapes
-- Use `type` for unions and primitives
-
-### Imports
-- Type imports first, then regular imports
-- Use path aliases: `@/*` for `./src/*`
-- Group imports by external libraries, then internal modules
-
-### Components
-- PascalCase naming
-- Use `React.forwardRef` with `displayName` for ref-forwarding components
-- 'use client' directive for client components
-
-### Styling
-- Tailwind CSS with shadcn/ui design system
-- Use `cn()` utility for conditional classes
-- CSS variables for theming (dark mode support)
-- Responsive design with mobile-first approach
-
-### Naming Conventions
-- camelCase: variables, functions, hooks
-- PascalCase: components, types, interfaces
-- kebab-case: CSS classes (via Tailwind)
-
-### Error Handling
-- Use try-catch for async operations
-- Custom error classes extending Error
-- JSDoc comments for complex error-related functions
-
-### Formatting
-- 2-space indentation
-- Single quotes for strings
-- Semicolons required
-- Trailing commas in multiline objects/arrays
+- **TypeScript**: Strict mode, explicit types, interfaces over types
+- **Imports**: Type imports first, `@/*` aliases, group by external/internal
+- **Components**: PascalCase, forwardRef with displayName, 'use client' directive
+- **Styling**: Tailwind + shadcn/ui, `cn()` utility, CSS variables, mobile-first
+- **Naming**: camelCase (vars/functions), PascalCase (components/types), kebab-case (CSS)
+- **Error Handling**: try-catch, custom Error classes, JSDoc comments
+- **Formatting**: 2-space indent, single quotes, semicolons, trailing commas
