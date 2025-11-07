@@ -1,5 +1,8 @@
 # AGENTS.md
 
+# Comportement
+You got to do the modifications in the code, not to show the user what to modify.Use your tools to do the modifications. Use the best practices of the code.
+
 ## Build/Lint/Test Commands
 - `npm run dev` - Development server (port 9002)
 - `npm run build` - Production build
