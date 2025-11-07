@@ -4,6 +4,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 import { Inter } from 'next/font/google';
 import { Navbar } from '@/components/layout/navbar';
+import { Footer } from '@/components/layout/footer';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -24,10 +25,8 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            {children}
-            <footer className="flex items-center justify-center p-6 bg-background border-t">
-              <p className="text-sm text-muted-foreground">&copy; 2024 AuthZen. All rights reserved.</p>
-            </footer>
+            <main className="flex-1">{children}</main>
+            <Footer />
           </div>
           <Toaster />
         </FirebaseClientProvider>
