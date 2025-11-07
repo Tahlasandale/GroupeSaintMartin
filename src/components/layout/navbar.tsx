@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 
 export function Navbar() {
@@ -84,6 +84,9 @@ export function Navbar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetHeader>
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+            </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
               {navLinks}
             </nav>
