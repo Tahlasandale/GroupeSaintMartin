@@ -40,7 +40,7 @@ async function getPreRegisteredEmails(db: Firestore): Promise<string[]> {
         operation: 'list',
     });
     errorEmitter.emit('permission-error', permissionError);
-    // We re-throw the original error so the calling function knows something went wrong.
+    // Re-throw the original error to notify the caller of the failure.
     throw error;
   }
 }
@@ -112,7 +112,6 @@ export default function SendEmailPage() {
     } catch (error) {
       // The contextual error is already emitted by getPreRegisteredEmails.
       // We only show a generic toast here.
-      console.error(error);
       toast({
         variant: 'destructive',
         title: 'An error occurred',
