@@ -13,14 +13,14 @@ export function Footer() {
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             prefetch={false}
           >
-            Mentions Légales
+            Legal Notice
           </Link>
           <Link
             href="/politique-de-confidentialite"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             prefetch={false}
           >
-            Politique de confidentialité
+            Privacy Policy
           </Link>
         </nav>
       </div>
