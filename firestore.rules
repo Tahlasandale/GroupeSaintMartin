@@ -9,11 +9,13 @@
  * Data Structure:
  * - /users/{userId}: Stores user profile information.
  * - /users/{userId}/dashboards/{dashboardId}: Stores dashboards owned by the user.
+ * - /pre-registrations/{preRegistrationId}: Stores emails from the pre-registration form.
  *
  * Key Security Decisions:
  * - Users can only read and write their own user document and their dashboards.
  * - Listing all users is disallowed to protect user privacy.
  * - Read-only collections are not applicable in this data model.
+ * - Anyone can write to the pre-registrations collection, but no one can read from it.
  *
  * Denormalization for Authorization:
  * - The `Dashboard` entity contains a `userId` field, denormalizing the ownership
@@ -73,6 +75,18 @@ service cloud.firestore {
       allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == userId;
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
+
+    /**
+     * @description Allows public write access for pre-registration emails, but denies all read access.
+     * @path /pre-registrations/{preRegistrationId}
+     * @allow (create) - Anyone can submit their email for pre-registration.
+     *    Request: path = "/databases/(default)/documents/pre-registrations/some-id", request.resource.data.email = "test@example.com"
+     * @deny (read, list, update, delete) - No one can read, update, or delete pre-registration entries.
+     */
+    match /pre-registrations/{preRegistrationId} {
+      allow read, update, delete: if false;
+      allow create: if isValidPreRegistrationRequest();
+    }
   }
 
   // --- Helper Functions ---
@@ -101,5 +115,15 @@ service cloud.firestore {
    */
   function isExistingOwner(userId) {
     return isOwner(userId) && resource != null;
+  }
+
+  /**
+   * @description Validates the data for a new pre-registration entry.
+   * @returns {boolean} True if the request is valid, false otherwise.
+   */
+  function isValidPreRegistrationRequest() {
+    return request.resource.data.keys().hasOnly(['email', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.createdAt is string;
   }
 }

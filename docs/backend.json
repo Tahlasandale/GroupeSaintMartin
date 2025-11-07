@@ -79,6 +79,33 @@
         "title",
         "createdDate"
       ]
+    },
+    "PreRegistration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PreRegistration",
+      "type": "object",
+      "description": "Represents an email submitted through the pre-registration form.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PreRegistration entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address submitted for pre-registration.",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the email was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -124,8 +151,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/pre-registrations/{preRegistrationId}",
+        "definition": {
+          "entityName": "PreRegistration",
+          "schema": {
+            "$ref": "#/backend/entities/PreRegistration"
+          },
+          "description": "Stores emails from the pre-registration form. This collection is write-only for the public and not readable to protect privacy.",
+          "params": [
+            {
+              "name": "preRegistrationId",
+              "description": "Unique identifier for the pre-registration entry."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore structure is designed to securely manage user data and dashboards. The `/users/{userId}` collection stores user profiles, while the `/users/{userId}/dashboards/{dashboardId}` subcollection stores dashboards owned by each user. This structure uses path-based ownership, ensuring strong data isolation and simplified security rules. Authorization Independence is achieved because access control is directly tied to the path and the user's authentication status. List operations are secure due to the hierarchical structure; a user can only list dashboards within their own user document. Because of this data segregation and strict user ownership, QAPs are directly supported by the path structure."
+    "reasoning": "The Firestore structure is designed to securely manage user data and dashboards. The `/users/{userId}` collection stores user profiles, while the `/users/{userId}/dashboards/{dashboardId}` subcollection stores dashboards owned by each user. This structure uses path-based ownership, ensuring strong data isolation and simplified security rules. The `/pre-registrations` collection is designed for public write access to collect emails, with read access disabled to ensure privacy. Authorization Independence is achieved because access control is directly tied to the path and the user's authentication status. List operations are secure due to the hierarchical structure; a user can only list dashboards within their own user document. Because of this data segregation and strict user ownership, QAPs are directly supported by the path structure."
   }
 }
