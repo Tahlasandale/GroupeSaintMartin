@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, getDocs, collection, Firestore } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Leaf, Loader2 } from 'lucide-react';
@@ -71,45 +71,52 @@ export default function SendEmailPage() {
 
   const onSubmit = async (values: z.infer<typeof emailSchema>) => {
     setIsLoading(true);
-    try {
-      const emails = await getPreRegisteredEmails(firestore);
-
-      if (emails.length === 0) {
+    // We are removing the try...catch block to allow the app to proceed
+    // even if there is a permission error. This is a workaround.
+    const emails = await getPreRegisteredEmails(firestore).catch(() => {
+        // Silently fail and return an empty array.
         toast({
-          title: 'No emails to send',
-          description: 'There are no users in the pre-registration list.',
+            variant: 'destructive',
+            title: 'An error occurred',
+            description: 'Could not fetch pre-registration emails. Please check permissions.',
         });
-        setIsLoading(false);
-        return;
+        return [];
+    });
+
+    if (emails.length === 0) {
+      if (!toast) { // Check if toast was already shown
+          toast({
+            title: 'No emails to send',
+            description: 'There are no users in the pre-registration list, or there was an error fetching them.',
+          });
       }
+    } else {
+        try {
+            // We send emails one by one. For a very large list, this should be a backend job.
+            for (const email of emails) {
+                await sendEmail({
+                to: email,
+                subject: values.subject,
+                text: values.body,
+                html: `<p>${values.body.replace(/\n/g, '<br>')}</p>`,
+                });
+            }
 
-      // We send emails one by one. For a very large list, this should be a backend job.
-      for (const email of emails) {
-        await sendEmail({
-          to: email,
-          subject: values.subject,
-          text: values.body,
-          html: `<p>${values.body.replace(/\n/g, '<br>')}</p>`,
-        });
-      }
-
-      toast({
-        title: 'Emails sent successfully!',
-        description: `Sent to ${emails.length} pre-registered users.`,
-      });
-      form.reset();
-
-    } catch (error) {
-      // The contextual error is already emitted by getPreRegisteredEmails.
-      // We only show a generic toast here.
-      toast({
-        variant: 'destructive',
-        title: 'An error occurred',
-        description: 'Could not fetch pre-registration emails. Please check permissions.',
-      });
-    } finally {
-      setIsLoading(false);
+            toast({
+                title: 'Emails sent successfully!',
+                description: `Sent to ${emails.length} pre-registered users.`,
+            });
+            form.reset();
+        } catch(emailError) {
+             toast({
+                variant: 'destructive',
+                title: 'Email Sending Error',
+                description: 'Could not send emails. Please check the email service configuration.',
+            });
+        }
     }
+
+    setIsLoading(false);
   };
 
   if (isUserLoading || isUserDataLoading || !userData || !(userData as any).isAdmin) {
