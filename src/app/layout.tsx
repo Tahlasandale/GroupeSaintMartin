@@ -1,8 +1,9 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 import { Inter } from 'next/font/google';
+import { Navbar } from '@/components/layout/navbar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -21,7 +22,13 @@ export default function RootLayout({
       <head />
       <body className="font-body antialiased">
         <FirebaseClientProvider>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            {children}
+            <footer className="flex items-center justify-center p-6 bg-background border-t">
+              <p className="text-sm text-muted-foreground">&copy; 2024 AuthZen. All rights reserved.</p>
+            </footer>
+          </div>
           <Toaster />
         </FirebaseClientProvider>
       </body>
