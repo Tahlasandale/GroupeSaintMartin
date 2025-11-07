@@ -5,7 +5,7 @@ import { FirebaseApp } from 'firebase/app';
 import { Firestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
-import { setDocumentNonBlocking } from './non-blocking-updates';
+import { setDocumentNonBlocking, updateDocumentNonBlocking } from './non-blocking-updates';
 
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -81,7 +81,7 @@ const createUserDocumentIfNeeded = async (firestore: Firestore, user: User) => {
     setDocumentNonBlocking(userRef, newUser, { merge: false });
   } else {
     // If user exists, just update last login time. Also non-blocking.
-    setDocumentNonBlocking(userRef, { lastLogin: new Date().toISOString() }, { merge: true });
+    updateDocumentNonBlocking(userRef, { lastLogin: new Date().toISOString() });
   }
 };
 
