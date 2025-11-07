@@ -93,6 +93,7 @@ service cloud.firestore {
    * @description Checks if the authenticated user is the owner of the resource and the resource exists.
    * @param {string} userId The user ID to check against.
    * @returns {boolean} True if the user is the owner and the resource exists, false otherwise.
+   *
    */
   function isExistingOwner(userId) {
     return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId));
@@ -103,8 +104,10 @@ service cloud.firestore {
    * @returns {boolean} True if the request is valid, false otherwise.
    */
   function isValidPreRegistrationRequest() {
-    return request.resource.data.keys().hasOnly(['email', 'createdAt'])
-        && request.resource.data.email is string
-        && request.resource.data.createdAt is string;
+    let hasOnlyAllowedKeys = request.resource.data.keys().hasOnly(['email', 'createdAt']);
+    let isEmailString = request.resource.data.email is string;
+    let isCreatedAtString = request.resource.data.createdAt is string;
+
+    return hasOnlyAllowedKeys && isEmailString && isCreatedAtString;
   }
 }
