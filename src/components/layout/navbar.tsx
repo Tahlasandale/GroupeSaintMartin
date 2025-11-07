@@ -88,7 +88,7 @@ export function Navbar() {
               <SheetTitle className="sr-only">Menu</SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
-              <Button variant="ghost" asChild className="justify-start">
+              <Button variant="link" asChild>
                 <Link href="/" prefetch={false} onClick={handleLinkClick}>
                   <Home className="mr-2 h-4 w-4" />
                   Home
