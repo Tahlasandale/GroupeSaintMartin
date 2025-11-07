@@ -30,9 +30,9 @@ const emailSchema = z.object({
 });
 
 async function getPreRegisteredEmails(db: Firestore): Promise<string[]> {
-  const preRegistrationsRef = collection(db, 'pre-registrations');
-  const querySnapshot = await getDocs(preRegistrationsRef);
-  return querySnapshot.docs.map((doc) => doc.data().email);
+    const preRegistrationsRef = collection(db, 'pre-registrations');
+    const querySnapshot = await getDocs(preRegistrationsRef);
+    return querySnapshot.docs.map((doc) => doc.data().email);
 }
 
 export default function SendEmailPage() {
@@ -71,49 +71,40 @@ export default function SendEmailPage() {
 
   const onSubmit = async (values: z.infer<typeof emailSchema>) => {
     setIsLoading(true);
-    // We are removing the try...catch block to allow the app to proceed
-    // even if there is a permission error. This is a workaround.
-    const emails = await getPreRegisteredEmails(firestore).catch(() => {
-        // Silently fail and return an empty array.
+    let emails: string[] = [];
+    try {
+        emails = await getPreRegisteredEmails(firestore);
+    } catch (error) {
         toast({
             variant: 'destructive',
             title: 'An error occurred',
             description: 'Could not fetch pre-registration emails. Please check permissions.',
         });
-        return [];
-    });
+        setIsLoading(false);
+        return;
+    }
 
     if (emails.length === 0) {
-      if (!toast) { // Check if toast was already shown
-          toast({
-            title: 'No emails to send',
-            description: 'There are no users in the pre-registration list, or there was an error fetching them.',
-          });
-      }
+      toast({
+        title: 'No emails to send',
+        description: 'There are no users in the pre-registration list.',
+      });
     } else {
-        try {
-            // We send emails one by one. For a very large list, this should be a backend job.
-            for (const email of emails) {
-                await sendEmail({
-                to: email,
-                subject: values.subject,
-                text: values.body,
-                html: `<p>${values.body.replace(/\n/g, '<br>')}</p>`,
-                });
-            }
-
-            toast({
-                title: 'Emails sent successfully!',
-                description: `Sent to ${emails.length} pre-registered users.`,
-            });
-            form.reset();
-        } catch(emailError) {
-             toast({
-                variant: 'destructive',
-                title: 'Email Sending Error',
-                description: 'Could not send emails. Please check the email service configuration.',
+        // We send emails one by one. For a very large list, this should be a backend job.
+        for (const email of emails) {
+            await sendEmail({
+            to: email,
+            subject: values.subject,
+            text: values.body,
+            html: `<p>${values.body.replace(/\n/g, '<br>')}</p>`,
             });
         }
+
+        toast({
+            title: 'Emails sent successfully!',
+            description: `Sent to ${emails.length} pre-registered users.`,
+        });
+        form.reset();
     }
 
     setIsLoading(false);
