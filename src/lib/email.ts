@@ -17,19 +17,26 @@ type MailOptions = {
 export async function sendEmail({ to, subject, text, html }: MailOptions) {
   const verifiedSender = process.env.SENDGRID_VERIFIED_EMAIL || 'humbartdev@proton.me';
 
+  // If the SendGrid API key is not set, simulate email sending in non-production environments
   if (!process.env.SENDGRID_API_KEY) {
-    console.error('SendGrid API Key is not configured. Skipping email.');
-    // In a real app, you might want to throw an error or handle this more gracefully.
-    // For local dev, we can simulate a success without sending.
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`SIMULATED EMAIL:
+      console.log(`
+      ====================
+      📧 SIMULATED EMAIL 📧
       To: ${to}
       From: ${verifiedSender}
       Subject: ${subject}
-      Body: ${text}`);
+      --------------------
+      Body (HTML): ${html}
+      ====================
+      `);
+      // Return successfully without actually sending an email.
       return;
+    } else {
+      // In production, throw an error if not configured.
+      console.error('CRITICAL: SendGrid API Key is not configured for production environment.');
+      throw new Error('Email service is not configured.');
     }
-    throw new Error('Email configuration is missing.');
   }
 
   const msg = {
@@ -44,9 +51,8 @@ export async function sendEmail({ to, subject, text, html }: MailOptions) {
     await sgMail.send(msg);
     console.log(`Email sent to ${to}`);
   } catch (error) {
-    console.error('Error sending email:', error);
-    // Depending on the use case, you might want to re-throw the error
-    // to let the calling function know that the email failed to send.
-    throw new Error('Failed to send email.');
+    console.error('Error sending email via SendGrid:', error);
+    // Let the calling function know that the email failed to send.
+    throw new Error('Failed to send email via SendGrid.');
   }
 }
