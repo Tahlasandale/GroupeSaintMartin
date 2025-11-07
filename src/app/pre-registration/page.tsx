@@ -28,7 +28,7 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 
 const preRegistrationSchema = z.object({
-  email: z.string().email({ message: 'Adresse e-mail invalide.' }),
+  email: z.string().email({ message: 'Invalid email address.' }),
 });
 
 export default function PreRegistrationPage() {
@@ -54,15 +54,15 @@ export default function PreRegistrationPage() {
       });
       setIsSubmitted(true);
       toast({
-        title: 'Inscription réussie !',
-        description: 'Merci pour votre intérêt. Nous vous tiendrons informé.',
+        title: 'Registration successful!',
+        description: 'Thank you for your interest. We will keep you informed.',
       });
     } catch (error) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Une erreur est survenue',
-        description: "Nous n'avons pas pu enregistrer votre e-mail. Veuillez réessayer.",
+        title: 'An error occurred',
+        description: 'We could not save your email. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -73,15 +73,15 @@ export default function PreRegistrationPage() {
     <div className="container mx-auto flex items-center justify-center py-12 px-4 md:px-6">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Rejoignez notre liste d'attente</CardTitle>
+          <CardTitle className="text-3xl font-bold">Join our waiting list</CardTitle>
           <CardDescription className="pt-2">
-            Soyez le premier informé du lancement de notre application révolutionnaire ! Promesses, bla bla, vous allez adorer.
+            Be the first to know when our revolutionary app launches! Promises, blah blah, you'll love it.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isSubmitted ? (
             <div className="text-center text-lg font-medium text-primary">
-              <p>Merci ! Votre e-mail a bien été enregistré.</p>
+              <p>Thank you! Your email has been successfully registered.</p>
             </div>
           ) : (
             <Form {...form}>
@@ -91,13 +91,13 @@ export default function PreRegistrationPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Adresse e-mail</FormLabel>
+                      <FormLabel>Email address</FormLabel>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="votre.email@example.com"
+                            placeholder="your.email@example.com"
                             className="pl-10"
                             {...field}
                           />
@@ -109,7 +109,7 @@ export default function PreRegistrationPage() {
                 />
                 <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Me pré-inscrire
+                  Pre-register
                 </Button>
               </form>
             </Form>

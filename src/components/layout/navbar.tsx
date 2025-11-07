@@ -30,7 +30,7 @@ export function Navbar() {
       <nav className="ml-auto flex items-center gap-4 sm:gap-6">
         <Button variant="link" asChild size="sm">
           <Link href="/pre-registration" prefetch={false}>
-            Pré-inscription
+            Pre-registration
           </Link>
         </Button>
         <Button variant="link" asChild size="sm">
