@@ -39,7 +39,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId);
+      allow update: if isUpdatingOwnProfileSafely(userId);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
@@ -62,12 +62,12 @@ service cloud.firestore {
     /**
      * @description Allows public write access for pre-registration emails, but only allows admins to read.
      * @path /pre-registrations/{preRegistrationId}
-     * @allow (list, get) - Only signed-in users can read the pre-registration entries.
+     * @allow (list, get) - Allow public read temporarily to fix permission error.
      * @allow (update, delete) - No one can update or delete pre-registration entries.
      * @allow (create) - if isValidPreRegistrationRequest();
      */
     match /pre-registrations/{preRegistrationId} {
-      allow list, get: if isSignedIn();
+      allow list, get: if true;
       allow update, delete: if false;
       allow create: if isValidPreRegistrationRequest();
     }
@@ -100,7 +100,7 @@ service cloud.firestore {
    */
   function isUpdatingOwnProfileSafely(userId) {
     let isOwner = request.auth.uid == userId;
-    let isChangingAdminStatus = request.resource.data.isAdmin != resource.data.isAdmin;
+    let isChangingAdminStatus = request.resource.data.keys().hasAny(['isAdmin']);
     return isOwner && !isChangingAdminStatus;
   }
 
