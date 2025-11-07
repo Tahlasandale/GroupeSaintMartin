@@ -15,6 +15,13 @@ export function Footer() {
           >
             Mentions Légales
           </Link>
+          <Link
+            href="/politique-de-confidentialite"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            prefetch={false}
+          >
+            Politique de confidentialité
+          </Link>
         </nav>
       </div>
     </footer>
