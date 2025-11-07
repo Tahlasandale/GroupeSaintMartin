@@ -89,7 +89,11 @@ export default function SendEmailPage() {
         title: 'No emails to send',
         description: 'There are no users in the pre-registration list.',
       });
-    } else {
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
         // We send emails one by one. For a very large list, this should be a backend job.
         for (const email of emails) {
             await sendEmail({
@@ -105,9 +109,16 @@ export default function SendEmailPage() {
             description: `Sent to ${emails.length} pre-registered users.`,
         });
         form.reset();
-    }
 
-    setIsLoading(false);
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Email Sending Error',
+            description: 'Could not send emails. Please check the email service configuration.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   if (isUserLoading || isUserDataLoading || !userData || !(userData as any).isAdmin) {

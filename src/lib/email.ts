@@ -13,20 +13,25 @@ type MailOptions = {
 };
 
 export async function sendEmail({ to, subject, text, html }: MailOptions): Promise<void> {
-  const verifiedSender = process.env.SENDGRID_VERIFIED_EMAIL || 'humbartdev@proton.me';
+  const verifiedSender = process.env.SENDGRID_VERIFIED_EMAIL;
 
-  if (!process.env.SENDGRID_API_KEY) {
+  if (!process.env.SENDGRID_API_KEY || !verifiedSender) {
+    console.error('SendGrid API Key or Verified Email is not configured.');
+    // En production, nous devrions lever une erreur pour indiquer un problème de configuration.
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('Email service is not configured.');
+    }
+    // En développement, simuler l'envoi pour ne pas bloquer.
     console.log(`
     ====================
     📧 SIMULATED EMAIL (Sending Disabled) 📧
     To: ${to}
-    From: ${verifiedSender}
+    From: ${verifiedSender || 'not-configured@example.com'}
     Subject: ${subject}
     --------------------
     Body (HTML): ${html}
     ====================
     `);
-    // In all environments, if the key is missing, resolve the promise to avoid errors.
     return Promise.resolve();
   }
 
@@ -43,7 +48,7 @@ export async function sendEmail({ to, subject, text, html }: MailOptions): Promi
     console.log(`Email sent to ${to}`);
   } catch (error) {
     console.error('Error sending email via SendGrid:', error);
-    // In case of a real API error, re-throw to be caught by the caller.
+    // En cas d'erreur réelle de l'API, nous la propageons pour que l'appelant puisse la gérer.
     throw new Error('Failed to send email via SendGrid.');
   }
 }
