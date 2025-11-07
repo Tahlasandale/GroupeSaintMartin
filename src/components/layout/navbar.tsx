@@ -29,11 +29,6 @@ export function Navbar() {
       </Link>
       <nav className="ml-auto flex items-center gap-4 sm:gap-6">
         <Button variant="link" asChild size="sm">
-          <Link href="/" prefetch={false}>
-            Home
-          </Link>
-        </Button>
-        <Button variant="link" asChild size="sm">
           <Link href="/dashboard" prefetch={false}>
             Dashboard
           </Link>
