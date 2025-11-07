@@ -2,9 +2,10 @@
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
+import { setDocumentNonBlocking } from './non-blocking-updates';
 
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -52,6 +53,35 @@ export interface UserHookResult { // Renamed from UserAuthHookResult for consist
 // React Context
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
+
+/**
+ * Creates a user document in Firestore if one doesn't already exist.
+ * This is a non-blocking operation.
+ * @param firestore - The Firestore instance.
+ * @param user - The Firebase Auth user object.
+ */
+const createUserDocumentIfNeeded = async (firestore: Firestore, user: User) => {
+  const userRef = doc(firestore, 'users', user.uid);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) {
+    const newUser = {
+      id: user.uid,
+      email: user.email,
+      name: user.displayName,
+      signUpDate: new Date().toISOString(),
+      lastLogin: new Date().toISOString(),
+      googleId: user.providerData.find(p => p.providerId === 'google.com')?.uid,
+    };
+    // Use the non-blocking fire-and-forget function
+    setDocumentNonBlocking(userRef, newUser, { merge: false });
+  } else {
+    // If user exists, just update last login time. Also non-blocking.
+    setDocumentNonBlocking(userRef, { lastLogin: new Date().toISOString() }, { merge: true });
+  }
+};
+
+
 /**
  * FirebaseProvider manages and provides Firebase services and user authentication state.
  */
@@ -69,8 +99,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, cannot determine user state
-      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
+    if (!auth || !firestore) { // If no Auth service instance, cannot determine user state
+      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth or Firestore service not provided.") });
       return;
     }
 
@@ -79,6 +109,10 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => { // Auth state determined
+        if (firebaseUser) {
+          // User is signed in, ensure their document exists in Firestore.
+          createUserDocumentIfNeeded(firestore, firebaseUser);
+        }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
       (error) => { // Auth listener error
@@ -87,7 +121,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       }
     );
     return () => unsubscribe(); // Cleanup
-  }, [auth]); // Depends on the auth instance
+  }, [auth, firestore]); // Depends on the auth and firestore instances
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {

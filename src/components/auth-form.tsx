@@ -21,7 +21,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { GoogleIcon } from '@/components/icons';
 import {
   Form,
@@ -92,7 +91,7 @@ export function AuthForm() {
       if (isLogin) {
         initiateEmailSignIn(auth, values.email, values.password);
       } else {
-        initiateEmailSignUp(auth, values.email, values.password);
+        initiateEmailSignUp(auth, values.email, (values as z.infer<typeof signupSchema>).password);
       }
       // Non-blocking, relying on onAuthStateChanged to redirect
     } catch (error: any) {
@@ -111,8 +110,10 @@ export function AuthForm() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
+      // The signInWithPopup promise will resolve after the user signs in
       await signInWithPopup(auth, provider);
-      // Non-blocking, redirect will be handled by useEffect
+      // The onAuthStateChanged listener in FirebaseProvider will handle user creation
+      // and redirect logic will be triggered by the useUser hook.
     } catch (error: any) {
       toast({
         variant: 'destructive',
