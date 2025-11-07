@@ -39,7 +39,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin);
+      allow update: if isSignedIn() && isOwner(userId) && request.resource.data.keys().hasOnly(['lastLogin']);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
@@ -67,7 +67,7 @@ service cloud.firestore {
      * @deny (update, delete) - No one can update or delete pre-registration entries.
      */
     match /pre-registrations/{preRegistrationId} {
-      allow list, get: if isAdmin();
+      allow list, get: if isSignedIn();
       allow update, delete: if false;
       allow create: if isValidPreRegistrationRequest();
     }
