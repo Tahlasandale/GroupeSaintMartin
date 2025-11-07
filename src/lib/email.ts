@@ -15,15 +15,26 @@ type MailOptions = {
 };
 
 export async function sendEmail({ to, subject, text, html }: MailOptions) {
-  if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_VERIFIED_EMAIL) {
-    console.error('SendGrid API Key or Verified Email is not configured. Skipping email.');
+  const verifiedSender = process.env.SENDGRID_VERIFIED_EMAIL || 'humbartdev@proton.me';
+
+  if (!process.env.SENDGRID_API_KEY) {
+    console.error('SendGrid API Key is not configured. Skipping email.');
     // In a real app, you might want to throw an error or handle this more gracefully.
-    return;
+    // For local dev, we can simulate a success without sending.
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`SIMULATED EMAIL:
+      To: ${to}
+      From: ${verifiedSender}
+      Subject: ${subject}
+      Body: ${text}`);
+      return;
+    }
+    throw new Error('Email configuration is missing.');
   }
 
   const msg = {
     to,
-    from: process.env.SENDGRID_VERIFIED_EMAIL,
+    from: verifiedSender,
     subject,
     text,
     html,
