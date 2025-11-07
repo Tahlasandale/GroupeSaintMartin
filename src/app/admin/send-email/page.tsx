@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc, getDocs, collection } from 'firebase/firestore';
+import { useUser, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { doc, getDocs, collection, Firestore } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { Leaf, Loader2 } from 'lucide-react';
 import { sendEmail } from '@/lib/email';
@@ -28,6 +28,22 @@ const emailSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required.' }),
   body: z.string().min(1, { message: 'Body is required.' }),
 });
+
+async function getPreRegisteredEmails(db: Firestore): Promise<string[]> {
+  const preRegistrationsRef = collection(db, 'pre-registrations');
+  try {
+    const querySnapshot = await getDocs(preRegistrationsRef);
+    return querySnapshot.docs.map((doc) => doc.data().email);
+  } catch (error: any) {
+    const permissionError = new FirestorePermissionError({
+        path: preRegistrationsRef.path,
+        operation: 'list',
+    });
+    errorEmitter.emit('permission-error', permissionError);
+    // We re-throw the original error so the calling function knows something went wrong.
+    throw error;
+  }
+}
 
 export default function SendEmailPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,9 +82,7 @@ export default function SendEmailPage() {
   const onSubmit = async (values: z.infer<typeof emailSchema>) => {
     setIsLoading(true);
     try {
-      const preRegistrationsRef = collection(firestore, 'pre-registrations');
-      const querySnapshot = await getDocs(preRegistrationsRef);
-      const emails = querySnapshot.docs.map((doc) => doc.data().email);
+      const emails = await getPreRegisteredEmails(firestore);
 
       if (emails.length === 0) {
         toast({
@@ -96,11 +110,13 @@ export default function SendEmailPage() {
       form.reset();
 
     } catch (error) {
+      // The contextual error is already emitted by getPreRegisteredEmails.
+      // We only show a generic toast here.
       console.error(error);
       toast({
         variant: 'destructive',
         title: 'An error occurred',
-        description: 'Could not send emails. Please check the logs and try again.',
+        description: 'Could not fetch pre-registration emails. Please check permissions.',
       });
     } finally {
       setIsLoading(false);
