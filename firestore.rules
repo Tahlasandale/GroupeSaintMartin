@@ -1,0 +1,105 @@
+/**
+ * @fileoverview Firestore Security Rules for AuthZen application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model, ensuring that users can only
+ * access their own data. All data is nested under /users/{userId}, providing
+ * a clear and secure data hierarchy.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information.
+ * - /users/{userId}/dashboards/{dashboardId}: Stores dashboards owned by the user.
+ *
+ * Key Security Decisions:
+ * - Users can only read and write their own user document and their dashboards.
+ * - Listing all users is disallowed to protect user privacy.
+ * - Read-only collections are not applicable in this data model.
+ *
+ * Denormalization for Authorization:
+ * - The `Dashboard` entity contains a `userId` field, denormalizing the ownership
+ *   relationship. This allows for efficient authorization checks without needing
+ *   to perform additional reads.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Enforces that only the authenticated user can manage their own user document.
+     * @path /users/{userId}
+     * @allow (create) - Authenticated user creates their own user document with matching userId.
+     *    Request: auth.uid = "user123", document.id = "user123"
+     * @allow (get) - Authenticated user reads their own user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
+     * @allow (update) - Authenticated user updates their own user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
+     * @allow (delete) - Authenticated user deletes their own user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123"
+     * @deny (create) - Authenticated user attempts to create a user document with a mismatched userId.
+     *    Request: auth.uid = "user123", document.id = "user456"
+     * @deny (get) - Authenticated user attempts to read another user's document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456"
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Enforces that only the authenticated user can manage their own dashboards.
+     * @path /users/{userId}/dashboards/{dashboardId}
+     * @allow (create) - Authenticated user creates a dashboard under their user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1", request.resource.data.userId = "user123"
+     * @allow (get) - Authenticated user reads a dashboard under their user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
+     * @allow (update) - Authenticated user updates a dashboard under their user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
+     * @allow (delete) - Authenticated user deletes a dashboard under their user document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user123/dashboards/dash1"
+     * @deny (create) - Authenticated user attempts to create a dashboard under another user's document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456/dashboards/dash1", request.resource.data.userId = "user456"
+     * @deny (get) - Authenticated user attempts to read a dashboard under another user's document.
+     *    Request: auth.uid = "user123", path = "/databases/(default)/documents/users/user456/dashboards/dash1"
+     * @principle Enforces document ownership for all operations within the user's data tree.
+     */
+    match /users/{userId}/dashboards/{dashboardId} {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+  }
+
+  // --- Helper Functions ---
+
+  /**
+   * @description Checks if the user is signed in.
+   * @returns {boolean} True if the user is signed in, false otherwise.
+   */
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  /**
+   * @description Checks if the authenticated user is the owner of the resource.
+   * @param {string} userId The user ID to check against.
+   * @returns {boolean} True if the user is the owner, false otherwise.
+   */
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+  /**
+   * @description Checks if the authenticated user is the owner of the resource and the resource exists.
+   * @param {string} userId The user ID to check against.
+   * @returns {boolean} True if the user is the owner and the resource exists, false otherwise.
+   */
+  function isExistingOwner(userId) {
+    return isOwner(userId) && resource != null;
+  }
+}
