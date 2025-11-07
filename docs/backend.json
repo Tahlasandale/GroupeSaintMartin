@@ -1,0 +1,131 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user account within the AuthZen application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's display name."
+        },
+        "signUpDate": {
+          "type": "string",
+          "description": "The date and time the user signed up.",
+          "format": "date-time"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "The date and time the user last logged in.",
+          "format": "date-time"
+        },
+        "googleId": {
+          "type": "string",
+          "description": "User's google ID, if they signed up using google."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "signUpDate"
+      ]
+    },
+    "Dashboard": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Dashboard",
+      "type": "object",
+      "description": "Represents a dashboard page for a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Dashboard entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:1 Dashboard)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the dashboard."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the dashboard."
+        },
+        "createdDate": {
+          "type": "string",
+          "description": "The date and time the dashboard was created.",
+          "format": "date-time"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "The date and time the dashboard was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "createdDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data. The 'userId' parameter corresponds to the Firebase Auth UID. This allows path-based ownership, simplifying security rules.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/dashboards/{dashboardId}",
+        "definition": {
+          "entityName": "Dashboard",
+          "schema": {
+            "$ref": "#/backend/entities/Dashboard"
+          },
+          "description": "Stores dashboards owned by a user. The 'userId' parameter corresponds to the Firebase Auth UID, and the 'dashboardId' is a unique identifier for the dashboard. This enables path-based ownership and simplifies security rules.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "dashboardId",
+              "description": "Unique identifier for the dashboard."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to securely manage user data and dashboards. The `/users/{userId}` collection stores user profiles, while the `/users/{userId}/dashboards/{dashboardId}` subcollection stores dashboards owned by each user. This structure uses path-based ownership, ensuring strong data isolation and simplified security rules. Authorization Independence is achieved because access control is directly tied to the path and the user's authentication status. List operations are secure due to the hierarchical structure; a user can only list dashboards within their own user document. Because of this data segregation and strict user ownership, QAPs are directly supported by the path structure."
+  }
+}
