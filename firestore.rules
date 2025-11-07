@@ -38,7 +38,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId) && !('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin;
+      allow update: if isSignedIn() && isOwner(userId) && !('isAdmin' in request.resource.data);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
@@ -96,7 +96,7 @@ service cloud.firestore {
    * @returns {boolean} True if the user is an admin, false otherwise.
    */
   function isAdmin() {
-    return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
   }
 
   /**
