@@ -38,7 +38,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id && request.resource.data.isAdmin == resource.data.isAdmin;
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin;
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
