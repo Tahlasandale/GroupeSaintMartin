@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Firestore Security Rules for AuthZen application.
  *
@@ -38,7 +39,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isSignedIn() && isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin;
+      allow update: if isSignedIn() && isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
