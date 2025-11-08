@@ -19,6 +19,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type ContactSubmission = {
   id: string;
@@ -57,12 +58,11 @@ export default function AdminContactsPage() {
       router.push('/login');
     }
 
-    // Temporarily disable admin check for debugging permission issues
-    // if (!isUserDataLoading && userData) {
-    //   if (!(userData as any).isAdmin) {
-    //     router.push('/dashboard');
-    //   }
-    // }
+    if (!isUserDataLoading && userData) {
+       if (!(userData as any).isAdmin) {
+         router.push('/dashboard');
+       }
+    }
   }, [user, isUserLoading, userData, isUserDataLoading, router]);
 
   const handleStatusChange = (submissionId: string, field: 'read' | 'processed', value: boolean) => {
@@ -80,10 +80,9 @@ export default function AdminContactsPage() {
     );
   }
 
-  // Allow access for debugging, but you'd restore this check
-  // if (!userData || !(userData as any).isAdmin) {
-  //   return null; 
-  // }
+   if (!userData || !(userData as any).isAdmin) {
+     return null; 
+   }
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -109,54 +108,68 @@ export default function AdminContactsPage() {
                   <p className="mt-2 text-sm">Please ensure your Firestore security rules allow administrators to read the `contact-submissions` collection.</p>
               </div>
           )}
-          {!contactsError && contacts && contacts.length > 0 && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[180px]">Date</TableHead>
-                  <TableHead className="w-[200px]">From</TableHead>
-                  <TableHead>Message</TableHead>
-                  <TableHead className="text-center w-[80px]">Lu</TableHead>
-                  <TableHead className="text-center w-[80px]">Traité</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contacts.map((submission) => (
-                  <TableRow key={submission.id}>
-                    <TableCell>
-                      <div className="font-medium">
-                        {formatDistanceToNow(new Date(submission.createdAt), { addSuffix: true })}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(submission.createdAt).toLocaleString()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{submission.fullName}</div>
-                      <a href={`mailto:${submission.email}`} className="text-sm text-muted-foreground hover:text-primary">
-                        {submission.email}
-                      </a>
-                    </TableCell>
-                    <TableCell className="whitespace-pre-wrap">{submission.message}</TableCell>
-                    <TableCell className="text-center">
-                        <Checkbox
-                            checked={submission.read || false}
-                            onCheckedChange={(checked) => handleStatusChange(submission.id, 'read', !!checked)}
-                            aria-label="Mark as read"
-                        />
-                    </TableCell>
-                    <TableCell className="text-center">
-                        <Checkbox
-                            checked={submission.processed || false}
-                            onCheckedChange={(checked) => handleStatusChange(submission.id, 'processed', !!checked)}
-                            aria-label="Mark as processed"
-                        />
-                    </TableCell>
+          <TooltipProvider>
+            {!contactsError && contacts && contacts.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[180px]">Date</TableHead>
+                    <TableHead className="w-[200px]">From</TableHead>
+                    <TableHead>Message</TableHead>
+                    <TableHead className="text-center w-[80px]">Lu</TableHead>
+                    <TableHead className="text-center w-[80px]">Traité</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-           )}
+                </TableHeader>
+                <TableBody>
+                  {contacts.map((submission) => (
+                    <TableRow key={submission.id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {formatDistanceToNow(new Date(submission.createdAt), { addSuffix: true })}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(submission.createdAt).toLocaleString()}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{submission.fullName}</div>
+                        <a href={`mailto:${submission.email}`} className="text-sm text-muted-foreground hover:text-primary">
+                          {submission.email}
+                        </a>
+                      </TableCell>
+                      <TableCell className="whitespace-pre-wrap">{submission.message}</TableCell>
+                      <TableCell className="text-center">
+                          <Checkbox
+                              checked={submission.read || false}
+                              onCheckedChange={(checked) => handleStatusChange(submission.id, 'read', !!checked)}
+                              aria-label="Mark as read"
+                          />
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <span className={!submission.read ? 'cursor-not-allowed' : ''}>
+                                    <Checkbox
+                                        checked={submission.processed || false}
+                                        onCheckedChange={(checked) => handleStatusChange(submission.id, 'processed', !!checked)}
+                                        aria-label="Mark as processed"
+                                        disabled={!submission.read}
+                                    />
+                                </span>
+                            </TooltipTrigger>
+                            {!submission.read && (
+                                <TooltipContent>
+                                    <p>Vous devez marquer le message comme "Lu" avant de le traiter.</p>
+                                </TooltipContent>
+                            )}
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+           </TooltipProvider>
            {!contactsError && contacts && contacts.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
                   <p>No contact submissions yet.</p>
