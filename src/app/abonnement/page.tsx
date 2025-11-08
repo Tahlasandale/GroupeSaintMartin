@@ -24,42 +24,42 @@ import { useState } from 'react';
 
 const tiers = [
   {
-    name: 'Gratuit',
-    price: '0€',
+    name: 'Free',
+    price: '€0',
     features: [
-      'Accès aux fonctionnalités de base',
-      'Support par email',
-      'Analyses standards',
+      'Access to basic features',
+      'Email support',
+      'Standard analytics',
     ],
-    cta: 'Commencer',
+    cta: 'Get Started',
     href: '/dashboard', // Link to dashboard for free tier
     isLink: true,
   },
   {
     name: 'Pro',
-    price: '15€',
-    priceDescription: '/mois',
+    price: '€15',
+    priceDescription: '/month',
     features: [
-      'Toutes les fonctionnalités du plan Gratuit',
-      'Fonctionnalités avancées',
-      'Support prioritaire',
-      'Analyses détaillées',
+      'All features from the Free plan',
+      'Advanced features',
+      'Priority support',
+      'Detailed analytics',
     ],
-    cta: 'Choisir Pro',
+    cta: 'Choose Pro',
     href: 'https://polar.sh/', // Placeholder for your Polar.sh link
     isLink: true,
     featured: true,
   },
   {
-    name: 'Entreprise',
-    price: 'Sur devis',
+    name: 'Enterprise',
+    price: 'Custom',
     features: [
-      'Toutes les fonctionnalités du plan Pro',
-      'Accès API',
-      'Support dédié 24/7',
-      'Formation et intégration',
+      'All features from the Pro plan',
+      'API Access',
+      '24/7 dedicated support',
+      'Training and integration',
     ],
-    cta: 'Nous contacter',
+    cta: 'Contact Us',
     isLink: false,
   },
 ];
@@ -72,10 +72,10 @@ export default function SubscriptionPage() {
       <div className="container mx-auto py-12 px-4 md:px-6">
         <div className="flex flex-col items-center text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
-            Choisissez votre abonnement
+            Choose your subscription
           </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground md:text-xl">
-            Des plans simples et transparents, adaptés à vos besoins.
+            Simple and transparent plans, tailored to your needs.
           </p>
         </div>
 
