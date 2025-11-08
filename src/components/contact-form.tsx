@@ -18,6 +18,9 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { sendContactEmail } from '@/actions/send-contact-email';
+import { useFirestore } from '@/firebase';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection } from 'firebase/firestore';
 
 const contactFormSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -30,6 +33,7 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export function ContactForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -42,23 +46,42 @@ export function ContactForm() {
 
   const onSubmit = async (values: ContactFormValues) => {
     setIsLoading(true);
-    
-    const result = await sendContactEmail(values);
 
-    setIsLoading(false);
-
-    if (result.success) {
-      toast({
-        title: 'Message Sent!',
-        description: 'Thank you for contacting us. We will get back to you shortly.',
+    try {
+      // 1. Save to Firestore from the client
+      const submissionsRef = collection(firestore, 'contact-submissions');
+      await addDocumentNonBlocking(submissionsRef, {
+        ...values,
+        createdAt: new Date().toISOString(),
       });
-      form.reset();
-    } else {
+
+      // 2. Send email via server action
+      const result = await sendContactEmail(values);
+
+      if (result.success) {
+        toast({
+          title: 'Message Sent!',
+          description: 'Thank you for contacting us. We will get back to you shortly.',
+        });
+        form.reset();
+      } else {
+        // If email sending fails, inform the user but the data is still saved.
+        toast({
+          variant: 'destructive',
+          title: 'Email Sending Error',
+          description: result.error || 'Your message was saved, but we could not send the email notification.',
+        });
+      }
+    } catch (error) {
+      // This will catch errors from writing to Firestore
+      console.error("Error saving contact submission: ", error);
       toast({
         variant: 'destructive',
-        title: 'An error occurred',
-        description: result.error || 'Could not send your message. Please try again.',
+        title: 'Submission Error',
+        description: 'Could not save your message. Please check your connection and try again.',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

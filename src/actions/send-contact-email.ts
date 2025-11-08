@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email';
-import { getAdminApp } from '@/firebase/admin';
 
 const contactFormSchema = z.object({
   fullName: z.string(),
@@ -22,23 +21,8 @@ export async function sendContactEmail(formData: unknown) {
 
   const { fullName, email, message } = parsedData.data;
 
-  // 1. Save to Firestore using the Admin SDK
-  try {
-    const firestore = (await getAdminApp()).firestore();
-    const submissionData = {
-      fullName,
-      email,
-      message,
-      createdAt: new Date().toISOString(),
-    };
-    await firestore.collection('contact-submissions').add(submissionData);
-  } catch (dbError: any) {
-    console.error('Firestore Admin SDK Error:', dbError);
-    const errorMessage = `Database error: ${dbError.message}`;
-    return { success: false, error: errorMessage };
-  }
-
-  // 2. Send email
+  // This server action now ONLY sends the email.
+  // The data is saved to Firestore on the client-side.
   try {
     await sendEmail({
       to: RECIPIENT_EMAIL,
