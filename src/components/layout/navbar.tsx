@@ -33,13 +33,13 @@ export function Navbar() {
   const navLinks = (
     <>
       <Button variant="link" asChild>
-        <Link href="/pre-registration" prefetch={false} onClick={handleLinkClick}>
-          Pre-registration
+        <Link href="/dashboard" prefetch={false} onClick={handleLinkClick}>
+          Dashboard
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/dashboard" prefetch={false} onClick={handleLinkClick}>
-          Dashboard
+        <Link href="/pre-registration" prefetch={false} onClick={handleLinkClick}>
+          Pre-registration
         </Link>
       </Button>
       <Button variant="link" asChild>
@@ -89,7 +89,7 @@ export function Navbar() {
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
               <Button variant="link" asChild>
-                <Link href="/" prefetch={false} onClick={handleLinkClick}>
+                <Link href="/" prefetch={false} onClick={handleLinkClick} className="flex items-center justify-start">
                   <Home className="mr-2 h-4 w-4" />
                   Home
                 </Link>
