@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email';
+import { initializeFirebase } from '@/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const contactFormSchema = z.object({
   fullName: z.string(),
@@ -9,7 +11,7 @@ const contactFormSchema = z.object({
   message: z.string(),
 });
 
-const RECIPIENT_EMAIL = 'humbartdev.recive.unsterile356@passinbox.com';
+const RECIPIENT_EMAIL = 'alt.s2-cob4i0xv@yopmail.fr';
 
 export async function sendContactEmail(formData: unknown) {
   const parsedData = contactFormSchema.safeParse(formData);
@@ -21,6 +23,18 @@ export async function sendContactEmail(formData: unknown) {
   const { fullName, email, message } = parsedData.data;
 
   try {
+    // 1. Save to Firestore
+    const { firestore } = initializeFirebase();
+    const submissionData = {
+      fullName,
+      email,
+      message,
+      createdAt: new Date().toISOString(),
+    };
+    const submissionsCollection = collection(firestore, 'contact-submissions');
+    await addDoc(submissionsCollection, submissionData);
+
+    // 2. Send email
     await sendEmail({
       to: RECIPIENT_EMAIL,
       subject: `New Contact Form Submission from ${fullName}`,
@@ -37,7 +51,7 @@ export async function sendContactEmail(formData: unknown) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to send contact email:', error);
-    return { success: false, error: 'Failed to send the email.' };
+    console.error('Failed to send contact email or save submission:', error);
+    return { success: false, error: 'Failed to process the submission.' };
   }
 }

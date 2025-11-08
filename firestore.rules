@@ -11,12 +11,13 @@
  * - /users/{userId}: Stores user profile information, including an isAdmin flag.
  * - /users/{userId}/dashboards/{dashboardId}: Stores dashboards owned by the user.
  * - /pre-registrations/{preRegistrationId}: Stores emails from the pre-registration form.
+ * - /contact-submissions/{submissionId}: Stores submissions from the contact form.
  *
  * Key Security Decisions:
  * - Users can only read and write their own user document and their dashboards.
  * - The `isAdmin` flag is read-only for clients and can only be changed from the server-side.
  * - Listing all users is disallowed to protect user privacy.
- * - Anyone can write to the pre-registrations collection, but only admins can read from it.
+ * - Anyone can write to the pre-registrations and contact-submissions collections, but only admins can read from it.
  *
  * Denormalization for Authorization:
  * - The `Dashboard` entity contains a `userId` field, denormalizing the ownership
@@ -70,6 +71,17 @@ service cloud.firestore {
       allow list, get: if true;
       allow update, delete: if false;
       allow create: if isValidPreRegistrationRequest();
+    }
+
+    /**
+     * @description Allows public write for contact form submissions.
+     * @path /contact-submissions/{submissionId}
+     * @allow (read, update, delete) - Disallow reading, updating, or deleting by clients.
+     * @allow (create) - Allow anyone to create a new contact submission.
+     */
+    match /contact-submissions/{submissionId} {
+      allow read, update, delete: if false;
+      allow create: if isValidContactSubmissionRequest();
     }
   }
 
@@ -132,5 +144,20 @@ service cloud.firestore {
     let isCreatedAtString = request.resource.data.createdAt is string;
 
     return hasOnlyAllowedKeys && isEmailString && isCreatedAtString;
+  }
+
+  /**
+   * @description Validates the data for a new contact form submission.
+   * @returns {boolean} True if the request is valid.
+   */
+  function isValidContactSubmissionRequest() {
+    let data = request.resource.data;
+    let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt']);
+    let isFullNameString = data.fullName is string;
+    let isEmailString = data.email is string;
+    let isMessageString = data.message is string;
+    let isCreatedAtString = data.createdAt is string;
+
+    return hasOnlyAllowedKeys && isFullNameString && isEmailString && isMessageString && isCreatedAtString;
   }
 }
