@@ -156,7 +156,10 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
-    let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt', 'read', 'processed']);
+    let allowedKeys = ['fullName', 'email', 'message', 'createdAt', 'read', 'processed'];
+    // Check if all required keys are present
+    let hasAllRequiredKeys = data.keys().hasAll(allowedKeys);
+
     let isFullNameString = data.fullName is string;
     let isEmailString = data.email is string;
     let isMessageString = data.message is string;
@@ -164,7 +167,13 @@ service cloud.firestore {
     let isReadFalse = data.read == false;
     let isProcessedFalse = data.processed == false;
 
-    return hasOnlyAllowedKeys && isFullNameString && isEmailString && isMessageString && isCreatedAtString && isReadFalse && isProcessedFalse;
+    return hasAllRequiredKeys 
+        && isFullNameString 
+        && isEmailString 
+        && isMessageString 
+        && isCreatedAtString 
+        && isReadFalse 
+        && isProcessedFalse;
   }
 
   /**
@@ -172,23 +181,24 @@ service cloud.firestore {
    * @returns {boolean} True if the update is valid.
    */
   function isOnlyUpdatingStatus() {
-    // The update request should only contain the 'read' or 'processed' keys.
-    let incomingKeys = request.resource.data.keys();
-    let allowedKeys = ['read', 'processed'];
+    let incomingData = request.resource.data;
+    let existingData = resource.data;
     
-    // Ensure that no other fields are being modified.
-    let nonUpdatableFieldsUnchanged = request.resource.data.fullName == resource.data.fullName
-                                      && request.resource.data.email == resource.data.email
-                                      && request.resource.data.message == resource.data.message
-                                      && request.resource.data.createdAt == resource.data.createdAt;
-                                      
-    // Check if the keys in the request are a subset of the allowed keys
-    let allKeysAllowed = incomingKeys.hasAll(allowedKeys) == false && (incomingKeys.hasAny(allowedKeys));
+    // Check that only 'read' and 'processed' fields are being changed
+    let otherFieldsUnchanged = incomingData.fullName == existingData.fullName &&
+                                incomingData.email == existingData.email &&
+                                incomingData.message == existingData.message &&
+                                incomingData.createdAt == existingData.createdAt;
+
+    // Check if the keys being updated are only 'read' or 'processed'
+    let allowedUpdateKeys = ['read', 'processed'];
+    let updatingKeys = incomingData.diff(existingData).affectedKeys;
+    let allUpdatesAllowed = updatingKeys.hasOnly(allowedUpdateKeys);
     
-    // Ensure new values are booleans
-    let isReadBoolean = !request.resource.data.keys().hasAny(['read']) || request.resource.data.read is bool;
-    let isProcessedBoolean = !request.resource.data.keys().hasAny(['processed']) || request.resource.data.processed is bool;
-    
-    return nonUpdatableFieldsUnchanged && allKeysAllowed && isReadBoolean && isProcessedBoolean;
+    // Ensure new values are booleans if they exist
+    let readIsBoolean = !incomingData.keys().hasAny(['read']) || incomingData.read is bool;
+    let processedIsBoolean = !incomingData.keys().hasAny(['processed']) || incomingData.processed is bool;
+
+    return otherFieldsUnchanged && allUpdatesAllowed && readIsBoolean && processedIsBoolean;
   }
 }
