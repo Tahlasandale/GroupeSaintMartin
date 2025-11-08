@@ -42,28 +42,23 @@ export function ContactForm() {
 
   const onSubmit = async (values: ContactFormValues) => {
     setIsLoading(true);
-    try {
-      const result = await sendContactEmail(values);
+    
+    const result = await sendContactEmail(values);
 
-      if (result.success) {
-        toast({
-          title: 'Message Sent!',
-          description: 'Thank you for contacting us. We will get back to you shortly.',
-        });
-        form.reset();
-        // Here you might want to close the dialog, which would require lifting state up
-        // or using a different approach to close it from within.
-      } else {
-        throw new Error(result.error || 'An unknown error occurred.');
-      }
-    } catch (error) {
+    setIsLoading(false);
+
+    if (result.success) {
+      toast({
+        title: 'Message Sent!',
+        description: 'Thank you for contacting us. We will get back to you shortly.',
+      });
+      form.reset();
+    } else {
       toast({
         variant: 'destructive',
         title: 'An error occurred',
-        description: error instanceof Error ? error.message : 'Could not send your message. Please try again.',
+        description: result.error || 'Could not send your message. Please try again.',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
