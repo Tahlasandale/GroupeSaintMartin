@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase, useCollection, updateDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -26,6 +26,8 @@ type ContactSubmission = {
   email: string;
   message: string;
   createdAt: string;
+  read?: boolean;
+  processed?: boolean;
 };
 
 export default function AdminContactsPage() {
@@ -61,6 +63,13 @@ export default function AdminContactsPage() {
       }
     }
   }, [user, isUserLoading, userData, isUserDataLoading, router]);
+
+  const handleStatusChange = (submissionId: string, field: 'read' | 'processed', value: boolean) => {
+    if (!firestore) return;
+    const submissionRef = doc(firestore, 'contact-submissions', submissionId);
+    updateDocumentNonBlocking(submissionRef, { [field]: value });
+  };
+
 
   if (isUserLoading || isUserDataLoading || areContactsLoading) {
     return (
@@ -105,6 +114,8 @@ export default function AdminContactsPage() {
                   <TableHead className="w-[180px]">Date</TableHead>
                   <TableHead className="w-[200px]">From</TableHead>
                   <TableHead>Message</TableHead>
+                  <TableHead className="text-center w-[80px]">Lu</TableHead>
+                  <TableHead className="text-center w-[80px]">Traité</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -125,6 +136,20 @@ export default function AdminContactsPage() {
                       </a>
                     </TableCell>
                     <TableCell className="whitespace-pre-wrap">{submission.message}</TableCell>
+                    <TableCell className="text-center">
+                        <Checkbox
+                            checked={submission.read || false}
+                            onCheckedChange={(checked) => handleStatusChange(submission.id, 'read', !!checked)}
+                            aria-label="Mark as read"
+                        />
+                    </TableCell>
+                    <TableCell className="text-center">
+                        <Checkbox
+                            checked={submission.processed || false}
+                            onCheckedChange={(checked) => handleStatusChange(submission.id, 'processed', !!checked)}
+                            aria-label="Mark as processed"
+                        />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

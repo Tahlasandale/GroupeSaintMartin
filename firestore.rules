@@ -37,7 +37,7 @@ service cloud.firestore {
      * @allow (delete) - Authenticated user deletes their own user document.
      */
     match /users/{userId} {
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if isSignedIn();
       allow list: if false;
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
       allow update: if isUpdatingOwnProfileSafely(userId);
@@ -56,7 +56,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == userId;
+      update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == userId;
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
@@ -77,13 +77,15 @@ service cloud.firestore {
      * @description Allows public write for contact form submissions.
      * @path /contact-submissions/{submissionId}
      * @allow (read, list) - Only admins can read contact submissions.
-     * @allow (update, delete) - Disallow updating or deleting by clients.
+     * @allow (update) - Admins can update the status of submissions.
+     * @allow (delete) - Disallow deleting by clients.
      * @allow (create) - Allow anyone to create a new contact submission.
      */
     match /contact-submissions/{submissionId} {
-      allow read, list: if true;
-      allow update, delete: if false;
+      allow read, list: if isAdmin();
       allow create: if isValidContactSubmissionRequest();
+      allow update: if isAdmin() && isValidContactUpdate();
+      allow delete: if false;
     }
   }
 
@@ -154,6 +156,7 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
+    // On create, 'read' and 'processed' fields are not expected.
     let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt']);
     let isFullNameString = data.fullName is string;
     let isEmailString = data.email is string;
@@ -161,5 +164,26 @@ service cloud.firestore {
     let isCreatedAtString = data.createdAt is string;
 
     return hasOnlyAllowedKeys && isFullNameString && isEmailString && isMessageString && isCreatedAtString;
+  }
+
+  /**
+   * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed.
+   * @returns {boolean} True if the update is valid.
+   */
+  function isValidContactUpdate() {
+      let data = request.resource.data;
+      let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt', 'read', 'processed']);
+      
+      // Ensure non-updatable fields are not changed
+      let isFullNameSame = data.fullName == resource.data.fullName;
+      let isEmailSame = data.email == resource.data.email;
+      let isMessageSame = data.message == resource.data.message;
+      let isCreatedAtSame = data.createdAt == resource.data.createdAt;
+      
+      // Ensure new fields are booleans if they exist
+      let isReadBoolean = !data.keys().hasAny(['read']) || data.read is bool;
+      let isProcessedBoolean = !data.keys().hasAny(['processed']) || data.processed is bool;
+      
+      return hasOnlyAllowedKeys && isFullNameSame && isEmailSame && isMessageSame && isCreatedAtSame && isReadBoolean && isProcessedBoolean;
   }
 }

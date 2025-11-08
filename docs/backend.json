@@ -138,6 +138,14 @@
           "type": "string",
           "description": "The date and time the message was submitted.",
           "format": "date-time"
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Indicates if the contact message has been read."
+        },
+        "processed": {
+          "type": "boolean",
+          "description": "Indicates if the contact message has been processed."
         }
       },
       "required": [
