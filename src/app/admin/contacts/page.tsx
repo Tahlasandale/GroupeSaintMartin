@@ -2,7 +2,7 @@
 
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc, updateDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -20,6 +20,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 type ContactSubmission = {
   id: string;
@@ -31,10 +33,13 @@ type ContactSubmission = {
   processed?: boolean;
 };
 
+type FilterValue = 'all' | 'unread' | 'read_unprocessed' | 'processed';
+
 export default function AdminContactsPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
+  const [filter, setFilter] = useState<FilterValue>('all');
 
   // Admin access check
   const userDocRef = useMemoFirebase(
@@ -52,6 +57,21 @@ export default function AdminContactsPage() {
     [firestore]
   );
   const { data: contacts, isLoading: areContactsLoading, error: contactsError } = useCollection<ContactSubmission>(contactsQuery);
+
+  const filteredContacts = useMemo(() => {
+    if (!contacts) return [];
+    switch (filter) {
+      case 'unread':
+        return contacts.filter((c) => !c.read);
+      case 'read_unprocessed':
+        return contacts.filter((c) => c.read && !c.processed);
+      case 'processed':
+        return contacts.filter((c) => c.processed);
+      case 'all':
+      default:
+        return contacts;
+    }
+  }, [contacts, filter]);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -102,6 +122,31 @@ export default function AdminContactsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-6">
+              <RadioGroup
+                defaultValue="all"
+                onValueChange={(value: FilterValue) => setFilter(value)}
+                className="flex flex-wrap items-center gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="all" id="r-all" />
+                  <Label htmlFor="r-all">Tous</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="unread" id="r-unread" />
+                  <Label htmlFor="r-unread">Non lus</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="read_unprocessed" id="r-read-unprocessed" />
+                  <Label htmlFor="r-read-unprocessed">Lus (non traités)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="processed" id="r-processed" />
+                  <Label htmlFor="r-processed">Traités</Label>
+                </div>
+              </RadioGroup>
+          </div>
+
           {contactsError && (
               <div className="text-destructive p-4 bg-destructive/10 rounded-md">
                   <p><b>Error loading contacts:</b> {contactsError.message}</p>
@@ -109,7 +154,7 @@ export default function AdminContactsPage() {
               </div>
           )}
           <TooltipProvider>
-            {!contactsError && contacts && contacts.length > 0 && (
+            {!contactsError && filteredContacts && filteredContacts.length > 0 && (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -121,7 +166,7 @@ export default function AdminContactsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {contacts.map((submission) => (
+                  {filteredContacts.map((submission) => (
                     <TableRow key={submission.id}>
                       <TableCell>
                         <div className="font-medium">
@@ -170,9 +215,9 @@ export default function AdminContactsPage() {
               </Table>
             )}
            </TooltipProvider>
-           {!contactsError && contacts && contacts.length === 0 && (
+           {!contactsError && filteredContacts.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
-                  <p>No contact submissions yet.</p>
+                  <p>No messages match the current filter.</p>
               </div>
            )}
         </CardContent>
