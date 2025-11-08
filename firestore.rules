@@ -82,7 +82,7 @@ service cloud.firestore {
      * @allow (create) - Allow anyone to create a new contact submission.
      */
     match /contact-submissions/{submissionId} {
-      allow read, list: if true;
+      allow read, list: if isAdmin();
       allow create: if true;
       allow update: if isAdmin() && isOnlyUpdatingStatus();
       allow delete: if false;
@@ -116,8 +116,8 @@ service cloud.firestore {
    */
   function isUpdatingOwnProfileSafely(userId) {
     let isOwner = request.auth.uid == userId;
-    let isChangingAdminStatus = request.resource.data.keys().hasAny(['isAdmin']);
-    return isOwner && !isChangingAdminStatus;
+    let isNotChangingAdminStatus = !('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin;
+    return isOwner && isNotChangingAdminStatus;
   }
 
   /**
@@ -143,11 +143,11 @@ service cloud.firestore {
    * @returns {boolean} True if the request is valid, false otherwise.
    */
   function isValidPreRegistrationRequest() {
-    let hasOnlyAllowedKeys = request.resource.data.keys().hasOnly(['email', 'createdAt']);
-    let isEmailString = request.resource.data.email is string;
-    let isCreatedAtString = request.resource.data.createdAt is string;
-
-    return hasOnlyAllowedKeys && isEmailString && isCreatedAtString;
+    let data = request.resource.data;
+    return data.keys().hasAll(['email', 'createdAt']) && 
+           data.email is string && 
+           data.createdAt is string &&
+           data.size() == 2;
   }
 
   /**
@@ -156,8 +156,6 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
-    // Basic validation: ensure required fields are strings.
-    // This is more robust than hasOnly() if client sends extra fields.
     return data.fullName is string &&
            data.email is string &&
            data.message is string &&
@@ -174,21 +172,20 @@ service cloud.firestore {
     let incomingData = request.resource.data;
     let existingData = resource.data;
     
-    // Check that only 'read' and 'processed' fields are being changed
     let otherFieldsUnchanged = incomingData.fullName == existingData.fullName &&
                                 incomingData.email == existingData.email &&
                                 incomingData.message == existingData.message &&
                                 incomingData.createdAt == existingData.createdAt;
 
-    // Check if the keys being updated are only 'read' or 'processed'
     let allowedUpdateKeys = ['read', 'processed'];
-    let updatingKeys = incomingData.diff(existingData).affectedKeys;
+    let updatingKeys = incomingData.keys().diff(existingData.keys());
     let allUpdatesAllowed = updatingKeys.hasOnly(allowedUpdateKeys);
     
-    // Ensure new values are booleans if they exist
-    let readIsBoolean = !incomingData.keys().hasAny(['read']) || incomingData.read is bool;
-    let processedIsBoolean = !incomingData.keys().hasAny(['processed']) || incomingData.processed is bool;
+    let readIsBoolean = !('read' in incomingData) || incomingData.read is bool;
+    let processedIsBoolean = !('processed' in incomingData) || incomingData.processed is bool;
 
     return otherFieldsUnchanged && allUpdatesAllowed && readIsBoolean && processedIsBoolean;
   }
 }
+
+    
