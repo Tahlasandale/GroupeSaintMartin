@@ -2,8 +2,7 @@
 
 import { z } from 'zod';
 import { sendEmail } from '@/lib/email';
-import { initializeFirebase } from '@/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { getAdminApp } from '@/firebase/admin';
 
 const contactFormSchema = z.object({
   fullName: z.string(),
@@ -14,38 +13,34 @@ const contactFormSchema = z.object({
 const RECIPIENT_EMAIL = 'ziduweuliqui-7545@yopmail.com';
 
 export async function sendContactEmail(formData: unknown) {
-  console.log('Processing contact submission...');
   const parsedData = contactFormSchema.safeParse(formData);
 
   if (!parsedData.success) {
     const errorMessage = 'Invalid form data: ' + parsedData.error.flatten().fieldErrors;
-    console.error(errorMessage);
     return { success: false, error: errorMessage };
   }
 
   const { fullName, email, message } = parsedData.data;
 
-  // 1. Save to Firestore
+  // 1. Save to Firestore using the Admin SDK
   try {
-    console.log('Initializing Firebase and preparing to save submission...');
-    const { firestore } = initializeFirebase();
+    const firestore = (await getAdminApp()).firestore();
     const submissionData = {
       fullName,
       email,
       message,
       createdAt: new Date().toISOString(),
     };
-    const submissionsCollection = collection(firestore, 'contact-submissions');
-    await addDoc(submissionsCollection, submissionData);
-    console.log('Contact submission successfully saved to Firestore.');
+    await firestore.collection('contact-submissions').add(submissionData);
   } catch (dbError: any) {
-    console.error('Firestore error while saving contact submission:', dbError);
-    return { success: false, error: `Database error: ${dbError.message}` };
+    const errorMessage = dbError.code === 'permission-denied'
+      ? 'Database permission denied. Check your Firestore rules for server-side access.'
+      : `Database error: ${dbError.message}`;
+    return { success: false, error: errorMessage };
   }
 
   // 2. Send email
   try {
-    console.log('Preparing to send contact email...');
     await sendEmail({
       to: RECIPIENT_EMAIL,
       subject: `New Contact Form Submission from ${fullName}`,
@@ -59,9 +54,7 @@ export async function sendContactEmail(formData: unknown) {
         <p>${message.replace(/\n/g, '<br>')}</p>
       `,
     });
-     console.log('Contact email sent successfully.');
   } catch (emailError: any) {
-      console.error('SendGrid error while sending email:', emailError);
       return { success: false, error: `Email sending error: ${emailError.message}` };
   }
 
