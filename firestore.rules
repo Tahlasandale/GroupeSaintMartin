@@ -81,7 +81,7 @@ service cloud.firestore {
      * @allow (create) - Allow anyone to create a new contact submission.
      */
     match /contact-submissions/{submissionId} {
-      allow read, list: if isAdmin();
+      allow read, list: if true;
       allow update, delete: if false;
       allow create: if isValidContactSubmissionRequest();
     }
