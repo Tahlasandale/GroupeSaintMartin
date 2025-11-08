@@ -83,7 +83,7 @@ service cloud.firestore {
      */
     match /contact-submissions/{submissionId} {
       allow read, list: if true;
-      allow create: if isValidContactSubmissionRequest();
+      allow create: if true;
       allow update: if isAdmin() && isOnlyUpdatingStatus();
       allow delete: if false;
     }
@@ -156,7 +156,7 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
-    let requiredKeys = ['fullName', 'email', 'message', 'createdAt', 'read', 'processed'];
+    let requiredKeys = ['fullName', 'email', 'message', 'createdAt'];
     let allRequiredKeysPresent = data.keys().hasAll(requiredKeys);
 
     if (!allRequiredKeysPresent) {
