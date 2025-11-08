@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { ContactForm } from '../contact-form';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '../ui/button';
 
 export function Footer() {
   return (
@@ -7,7 +10,21 @@ export function Footer() {
         <p className="text-sm text-muted-foreground mb-4 sm:mb-0">
           &copy; 2024 AuthZen. All rights reserved.
         </p>
-        <nav className="flex gap-4 sm:gap-6">
+        <nav className="flex gap-4 sm:gap-6 items-center">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="link" className="text-sm text-muted-foreground p-0 h-auto">Contact Us</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Contact Us</DialogTitle>
+                <DialogDescription>
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </DialogDescription>
+              </DialogHeader>
+              <ContactForm />
+            </DialogContent>
+          </Dialog>
           <Link
             href="/mentions-legales"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
