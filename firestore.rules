@@ -32,7 +32,7 @@ service cloud.firestore {
      * @description Enforces that only the authenticated user can manage their own user document.
      * @path /users/{userId}
      * @allow (create) - Authenticated user creates their own user document. `isAdmin` defaults to false.
-     * @allow (get) - Authenticated user reads their own user document.
+     * @allow (get) - Authenticated user reads their own user document. This also allows the isAdmin() function to work correctly.
      * @allow (update) - Authenticated user updates their own user document, but cannot change `isAdmin`.
      * @allow (delete) - Authenticated user deletes their own user document.
      */
