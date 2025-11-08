@@ -195,7 +195,7 @@ export default function AdminContactsPage() {
                             {submission.email}
                           </a>
                         </TableCell>
-                        <TableCell className="whitespace-pre-wrap">{submission.message}</TableCell>
+                        <TableCell className="whitespace-pre-wrap break-words max-w-sm">{submission.message}</TableCell>
                         <TableCell className="text-center">
                             <Checkbox
                                 checked={submission.read || false}
