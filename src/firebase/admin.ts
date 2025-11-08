@@ -1,3 +1,4 @@
+'use server';
 // IMPORTANT: This file should not be used in the client-side.
 import * as admin from 'firebase-admin';
 
@@ -29,7 +30,7 @@ export async function getAdminApp() {
   const serviceAccount = getServiceAccount();
 
   if (!serviceAccount) {
-    throw new Error('Firebase Admin SDK Service Account is not available. Cannot initialize server-side features.');
+    throw new Error('Firebase Admin SDK Service Account is not available. This is required for server-side actions like writing to Firestore from a server component. Ensure the FIREBASE_SERVICE_ACCOUNT environment variable is set.');
   }
 
   if (admin.apps.length === 0) {

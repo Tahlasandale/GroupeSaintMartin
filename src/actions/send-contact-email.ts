@@ -33,9 +33,8 @@ export async function sendContactEmail(formData: unknown) {
     };
     await firestore.collection('contact-submissions').add(submissionData);
   } catch (dbError: any) {
-    const errorMessage = dbError.code === 'permission-denied'
-      ? 'Database permission denied. Check your Firestore rules for server-side access.'
-      : `Database error: ${dbError.message}`;
+    console.error('Firestore Admin SDK Error:', dbError);
+    const errorMessage = `Database error: ${dbError.message}`;
     return { success: false, error: errorMessage };
   }
 
@@ -55,6 +54,7 @@ export async function sendContactEmail(formData: unknown) {
       `,
     });
   } catch (emailError: any) {
+      console.error('Email Sending Error:', emailError);
       return { success: false, error: `Email sending error: ${emailError.message}` };
   }
 
