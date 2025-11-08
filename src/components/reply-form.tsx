@@ -43,7 +43,7 @@ export function ReplyForm({ recipientEmail, originalMessage, onReplySent }: Repl
   const form = useForm<ReplyFormValues>({
     resolver: zodResolver(replySchema),
     defaultValues: {
-      subject: '',
+      subject: 'Re: Your contact form submission',
       body: '',
     },
   });
