@@ -25,11 +25,6 @@ service cloud.firestore {
       let isNotChangingAdminStatus = !('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin;
       return isOwner && isNotChangingAdminStatus;
     }
-    
-    // Checks if the only fields being updated are 'read' and/or 'processed'.
-    function isOnlyUpdatingStatus() {
-      return request.resource.data.keys().hasOnly(['read', 'processed']);
-    }
 
     // --- Collection Rules ---
 
@@ -58,7 +53,7 @@ service cloud.firestore {
     match /contact-submissions/{submissionId} {
       allow read, list: if isAdmin();
       allow create: if true;
-      allow update: if isAdmin() && isOnlyUpdatingStatus();
+      allow update: if isAdmin();
       allow delete: if false;
     }
   }
