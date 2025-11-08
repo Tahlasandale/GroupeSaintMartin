@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,12 +25,18 @@ import { collection } from 'firebase/firestore';
 const contactFormSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
+  subject: z.string().min(5, { message: 'Subject must be at least 5 characters.' }),
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-export function ContactForm() {
+interface ContactFormProps {
+  initialSubject?: string;
+  onFormSubmit?: () => void;
+}
+
+export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
@@ -40,9 +46,19 @@ export function ContactForm() {
     defaultValues: {
       fullName: '',
       email: '',
+      subject: initialSubject,
       message: '',
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      fullName: '',
+      email: '',
+      subject: initialSubject,
+      message: '',
+    });
+  }, [initialSubject, form]);
 
   const onSubmit = async (values: ContactFormValues) => {
     setIsLoading(true);
@@ -66,6 +82,7 @@ export function ContactForm() {
           description: 'Thank you for contacting us. We will get back to you shortly.',
         });
         form.reset();
+        onFormSubmit?.();
       } else {
         // If email sending fails, inform the user but the data is still saved.
         toast({
@@ -111,6 +128,19 @@ export function ContactForm() {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="john.doe@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="subject"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Subject</FormLabel>
+              <FormControl>
+                <Input placeholder="Regarding..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

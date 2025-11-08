@@ -6,6 +6,7 @@ import { sendEmail } from '@/lib/email';
 const contactFormSchema = z.object({
   fullName: z.string(),
   email: z.string().email(),
+  subject: z.string(),
   message: z.string(),
 });
 
@@ -19,19 +20,20 @@ export async function sendContactEmail(formData: unknown) {
     return { success: false, error: errorMessage };
   }
 
-  const { fullName, email, message } = parsedData.data;
+  const { fullName, email, subject, message } = parsedData.data;
 
   // This server action now ONLY sends the email.
   // The data is saved to Firestore on the client-side.
   try {
     await sendEmail({
       to: RECIPIENT_EMAIL,
-      subject: `New Contact Form Submission from ${fullName}`,
-      text: `You have a new message from:\nName: ${fullName}\nEmail: ${email}\n\nMessage:\n${message}`,
+      subject: `New Contact: ${subject} from ${fullName}`,
+      text: `You have a new message from:\nName: ${fullName}\nEmail: ${email}\n\nSubject: ${subject}\n\nMessage:\n${message}`,
       html: `
         <h3>New Contact Form Submission</h3>
         <p><strong>Name:</strong> ${fullName}</p>
         <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p><strong>Subject:</strong> ${subject}</p>
         <hr>
         <h4>Message:</h4>
         <p>${message.replace(/\n/g, '<br>')}</p>
