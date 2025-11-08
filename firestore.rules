@@ -63,12 +63,12 @@ service cloud.firestore {
     /**
      * @description Allows public write access for pre-registration emails, but only allows admins to read.
      * @path /pre-registrations/{preRegistrationId}
-     * @allow (list, get) - Allow public read temporarily to fix permission error.
+     * @allow (list, get) - Public read is enabled for debugging. Should be restricted to admins.
      * @allow (update, delete) - No one can update or delete pre-registration entries.
      * @allow (create) - Allow anyone to create a new entry.
      */
     match /pre-registrations/{preRegistrationId} {
-      allow list, get: if true;
+      allow list, get: if true; // WARNING: Should be isAdmin() in production
       allow update, delete: if false;
       allow create: if true;
     }
@@ -139,32 +139,6 @@ service cloud.firestore {
   }
 
   /**
-   * @description Validates the data for a new pre-registration entry.
-   * @returns {boolean} True if the request is valid, false otherwise.
-   */
-  function isValidPreRegistrationRequest() {
-    let data = request.resource.data;
-    return data.keys().hasAll(['email', 'createdAt']) && 
-           data.email is string && 
-           data.createdAt is string &&
-           data.size() == 2;
-  }
-
-  /**
-   * @description Validates the data for a new contact form submission.
-   * @returns {boolean} True if the request is valid.
-   */
-  function isValidContactSubmissionRequest() {
-    let data = request.resource.data;
-    return data.fullName is string &&
-           data.email is string &&
-           data.message is string &&
-           data.createdAt is string &&
-           data.read == false &&
-           data.processed == false;
-  }
-
-  /**
    * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed by an admin.
    * @returns {boolean} True if the update is valid.
    */
@@ -172,20 +146,22 @@ service cloud.firestore {
     let incomingData = request.resource.data;
     let existingData = resource.data;
     
-    let otherFieldsUnchanged = incomingData.fullName == existingData.fullName &&
+    // Check that no other fields are being changed
+    let otherFieldsUnchanged = incomingData.keys().hasOnly(['fullName', 'email', 'message', 'createdAt', 'read', 'processed']) &&
+                                incomingData.fullName == existingData.fullName &&
                                 incomingData.email == existingData.email &&
                                 incomingData.message == existingData.message &&
                                 incomingData.createdAt == existingData.createdAt;
 
+    // Check that only 'read' and 'processed' can change
     let allowedUpdateKeys = ['read', 'processed'];
     let updatingKeys = incomingData.keys().diff(existingData.keys());
     let allUpdatesAllowed = updatingKeys.hasOnly(allowedUpdateKeys);
     
+    // Check that the types are correct if they exist
     let readIsBoolean = !('read' in incomingData) || incomingData.read is bool;
     let processedIsBoolean = !('processed' in incomingData) || incomingData.processed is bool;
 
     return otherFieldsUnchanged && allUpdatesAllowed && readIsBoolean && processedIsBoolean;
   }
 }
-
-    
