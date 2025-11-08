@@ -46,7 +46,7 @@ const tiers = [
       'Detailed analytics',
     ],
     cta: 'Choose Pro',
-    href: 'https://polar.sh/', // Placeholder for your Polar.sh link
+    href: 'https://buy.polar.sh/polar_cl_8WtBK8qKxwhIPc3owCulTeNXRTF7s4BXMGvNl0T70UR',
     isLink: true,
     featured: true,
   },
