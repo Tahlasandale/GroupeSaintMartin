@@ -53,6 +53,8 @@ export function ContactForm() {
       await addDocumentNonBlocking(submissionsRef, {
         ...values,
         createdAt: new Date().toISOString(),
+        read: false,
+        processed: false,
       });
 
       // 2. Send email via server action

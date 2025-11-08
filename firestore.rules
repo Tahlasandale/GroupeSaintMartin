@@ -84,7 +84,7 @@ service cloud.firestore {
     match /contact-submissions/{submissionId} {
       allow read, list: if isAdmin();
       allow create: if isValidContactSubmissionRequest();
-      allow update: if isAdmin() && isValidContactUpdate();
+      allow update: if isAdmin() && isOnlyUpdatingStatus();
       allow delete: if false;
     }
   }
@@ -156,34 +156,39 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
-    // On create, 'read' and 'processed' fields are not expected.
-    let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt']);
+    let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt', 'read', 'processed']);
     let isFullNameString = data.fullName is string;
     let isEmailString = data.email is string;
     let isMessageString = data.message is string;
     let isCreatedAtString = data.createdAt is string;
+    let isReadFalse = data.read == false;
+    let isProcessedFalse = data.processed == false;
 
-    return hasOnlyAllowedKeys && isFullNameString && isEmailString && isMessageString && isCreatedAtString;
+    return hasOnlyAllowedKeys && isFullNameString && isEmailString && isMessageString && isCreatedAtString && isReadFalse && isProcessedFalse;
   }
 
   /**
-   * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed.
+   * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed by an admin.
    * @returns {boolean} True if the update is valid.
    */
-  function isValidContactUpdate() {
-      let data = request.resource.data;
-      let hasOnlyAllowedKeys = data.keys().hasOnly(['fullName', 'email', 'message', 'createdAt', 'read', 'processed']);
-      
-      // Ensure non-updatable fields are not changed
-      let isFullNameSame = data.fullName == resource.data.fullName;
-      let isEmailSame = data.email == resource.data.email;
-      let isMessageSame = data.message == resource.data.message;
-      let isCreatedAtSame = data.createdAt == resource.data.createdAt;
-      
-      // Ensure new fields are booleans if they exist
-      let isReadBoolean = !data.keys().hasAny(['read']) || data.read is bool;
-      let isProcessedBoolean = !data.keys().hasAny(['processed']) || data.processed is bool;
-      
-      return hasOnlyAllowedKeys && isFullNameSame && isEmailSame && isMessageSame && isCreatedAtSame && isReadBoolean && isProcessedBoolean;
+  function isOnlyUpdatingStatus() {
+    // The update request should only contain the 'read' or 'processed' keys.
+    let incomingKeys = request.resource.data.keys();
+    let allowedKeys = ['read', 'processed'];
+    
+    // Ensure that no other fields are being modified.
+    let nonUpdatableFieldsUnchanged = request.resource.data.fullName == resource.data.fullName
+                                      && request.resource.data.email == resource.data.email
+                                      && request.resource.data.message == resource.data.message
+                                      && request.resource.data.createdAt == resource.data.createdAt;
+                                      
+    // Check if the keys in the request are a subset of the allowed keys
+    let allKeysAllowed = incomingKeys.hasAll(allowedKeys) == false && (incomingKeys.hasAny(allowedKeys));
+    
+    // Ensure new values are booleans
+    let isReadBoolean = !request.resource.data.keys().hasAny(['read']) || request.resource.data.read is bool;
+    let isProcessedBoolean = !request.resource.data.keys().hasAny(['processed']) || request.resource.data.processed is bool;
+    
+    return nonUpdatableFieldsUnchanged && allKeysAllowed && isReadBoolean && isProcessedBoolean;
   }
 }
