@@ -120,17 +120,17 @@ export default function AdminContactsPage() {
       <div className="container mx-auto py-12 px-4 md:px-6">
         <Button asChild variant="outline" className="mb-4">
           <Link href="/admin/dashboard">
-            &larr; Back to Admin Dashboard
+            &larr; Retour au tableau de bord
           </Link>
         </Button>
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
               <Users className="h-6 w-6" />
-              <CardTitle>Contact Form Submissions</CardTitle>
+              <CardTitle>Messages du formulaire de contact</CardTitle>
             </div>
             <CardDescription>
-              Here are the messages submitted through the contact form.
+              Voici les messages soumis via le formulaire de contact.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -161,8 +161,8 @@ export default function AdminContactsPage() {
 
             {contactsError && (
                 <div className="text-destructive p-4 bg-destructive/10 rounded-md">
-                    <p><b>Error loading contacts:</b> {contactsError.message}</p>
-                    <p className="mt-2 text-sm">Please ensure your Firestore security rules allow administrators to read the `contact-submissions` collection.</p>
+                    <p><b>Erreur de chargement des contacts :</b> {contactsError.message}</p>
+                    <p className="mt-2 text-sm">Veuillez vous assurer que vos règles de sécurité Firestore autorisent les administrateurs à lire la collection `contact-submissions`.</p>
                 </div>
             )}
             <TooltipProvider>
@@ -171,7 +171,7 @@ export default function AdminContactsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[180px]">Date</TableHead>
-                      <TableHead className="w-[200px]">From</TableHead>
+                      <TableHead className="w-[200px]">De</TableHead>
                       <TableHead>Message</TableHead>
                       <TableHead className="text-center w-[80px]">Lu</TableHead>
                       <TableHead className="text-center w-[80px]">Traité</TableHead>
@@ -238,7 +238,7 @@ export default function AdminContactsPage() {
             </TooltipProvider>
             {!contactsError && filteredContacts.length === 0 && (
                 <div className="text-center text-muted-foreground py-12">
-                    <p>No messages match the current filter.</p>
+                    <p>Aucun message ne correspond au filtre actuel.</p>
                 </div>
             )}
           </CardContent>
