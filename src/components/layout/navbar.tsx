@@ -94,7 +94,7 @@ export function Navbar() {
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
               <Button variant="link" asChild>
-                <Link href="/" prefetch={false} onClick={handleLinkClick} className="flex items-center justify-start">
+                <Link href="/" prefetch-={false} onClick={handleLinkClick} className="flex items-center justify-start">
                   <Home className="mr-2 h-4 w-4" />
                   Home
                 </Link>
