@@ -33,13 +33,18 @@ export function Navbar() {
   const navLinks = (
     <>
       <Button variant="link" asChild>
+        <Link href="/pre-registration" prefetch={false} onClick={handleLinkClick}>
+          Pre-registration
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
         <Link href="/dashboard" prefetch={false} onClick={handleLinkClick}>
           Dashboard
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/pre-registration" prefetch={false} onClick={handleLinkClick}>
-          Pre-registration
+        <Link href="/abonnement" prefetch={false} onClick={handleLinkClick}>
+          Abonnement
         </Link>
       </Button>
       <Button variant="link" asChild>
