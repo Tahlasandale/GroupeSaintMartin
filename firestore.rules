@@ -156,25 +156,24 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
+
+    // Check that required string fields exist and are strings
+    let requiredStringsValid = data.fullName is string &&
+                               data.email is string &&
+                               data.message is string &&
+                               data.createdAt is string;
+
+    // Check that required boolean fields exist and are false
+    let requiredBooleansValid = data.read == false &&
+                                data.processed == false;
+    
+    // Check that there are no unexpected fields.
+    // The client might send an 'id' field which we allow here.
     let allowedKeys = ['fullName', 'email', 'message', 'createdAt', 'read', 'processed'];
-    // Check if all required keys are present
-    let hasAllRequiredKeys = data.keys().hasAll(allowedKeys);
+    let allKeysAllowed = data.keys().hasOnly(allowedKeys);
 
-    let isFullNameString = data.fullName is string;
-    let isEmailString = data.email is string;
-    let isMessageString = data.message is string;
-    let isCreatedAtString = data.createdAt is string;
-    let isReadFalse = data.read == false;
-    let isProcessedFalse = data.processed == false;
-
-    return hasAllRequiredKeys 
-        && isFullNameString 
-        && isEmailString 
-        && isMessageString 
-        && isCreatedAtString 
-        && isReadFalse 
-        && isProcessedFalse;
-  }
+    return requiredStringsValid && requiredBooleansValid && allKeysAllowed;
+}
 
   /**
    * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed by an admin.
