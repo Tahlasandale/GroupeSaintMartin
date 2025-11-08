@@ -120,17 +120,17 @@ export default function AdminContactsPage() {
       <div className="container mx-auto py-12 px-4 md:px-6">
         <Button asChild variant="outline" className="mb-4">
           <Link href="/admin/dashboard">
-            &larr; Retour au tableau de bord
+            &larr; Back to dashboard
           </Link>
         </Button>
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
               <Users className="h-6 w-6" />
-              <CardTitle>Messages du formulaire de contact</CardTitle>
+              <CardTitle>Contact Form Submissions</CardTitle>
             </div>
             <CardDescription>
-              Voici les messages soumis via le formulaire de contact.
+              Here are the messages submitted through the contact form.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -142,27 +142,27 @@ export default function AdminContactsPage() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="all" id="r-all" />
-                    <Label htmlFor="r-all">Tous</Label>
+                    <Label htmlFor="r-all">All</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="unread" id="r-unread" />
-                    <Label htmlFor="r-unread">Non lus</Label>
+                    <Label htmlFor="r-unread">Unread</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="read_unprocessed" id="r-read-unprocessed" />
-                    <Label htmlFor="r-read-unprocessed">Lus (non traités)</Label>
+                    <Label htmlFor="r-read-unprocessed">Read (Unprocessed)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="processed" id="r-processed" />
-                    <Label htmlFor="r-processed">Traités</Label>
+                    <Label htmlFor="r-processed">Processed</Label>
                   </div>
                 </RadioGroup>
             </div>
 
             {contactsError && (
                 <div className="text-destructive p-4 bg-destructive/10 rounded-md">
-                    <p><b>Erreur de chargement des contacts :</b> {contactsError.message}</p>
-                    <p className="mt-2 text-sm">Veuillez vous assurer que vos règles de sécurité Firestore autorisent les administrateurs à lire la collection `contact-submissions`.</p>
+                    <p><b>Error loading contacts:</b> {contactsError.message}</p>
+                    <p className="mt-2 text-sm">Please ensure your Firestore security rules allow administrators to read the `contact-submissions` collection.</p>
                 </div>
             )}
             <TooltipProvider>
@@ -171,10 +171,10 @@ export default function AdminContactsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[180px]">Date</TableHead>
-                      <TableHead className="w-[200px]">De</TableHead>
+                      <TableHead className="w-[200px]">From</TableHead>
                       <TableHead>Message</TableHead>
-                      <TableHead className="text-center w-[80px]">Lu</TableHead>
-                      <TableHead className="text-center w-[80px]">Traité</TableHead>
+                      <TableHead className="text-center w-[80px]">Read</TableHead>
+                      <TableHead className="text-center w-[80px]">Processed</TableHead>
                       <TableHead className="text-center w-[120px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -217,7 +217,7 @@ export default function AdminContactsPage() {
                               </TooltipTrigger>
                               {!submission.read && (
                                   <TooltipContent>
-                                      <p>Vous devez marquer le message comme "Lu" avant de le traiter.</p>
+                                      <p>You must mark the message as "Read" before processing it.</p>
                                   </TooltipContent>
                               )}
                           </Tooltip>
@@ -226,7 +226,7 @@ export default function AdminContactsPage() {
                           <DialogTrigger asChild>
                              <Button variant="outline" size="sm" onClick={() => setReplyingTo(submission)}>
                                <MessageSquare className="mr-2 h-4 w-4" />
-                               Répondre
+                               Reply
                              </Button>
                           </DialogTrigger>
                         </TableCell>
@@ -238,7 +238,7 @@ export default function AdminContactsPage() {
             </TooltipProvider>
             {!contactsError && filteredContacts.length === 0 && (
                 <div className="text-center text-muted-foreground py-12">
-                    <p>Aucun message ne correspond au filtre actuel.</p>
+                    <p>No messages match the current filter.</p>
                 </div>
             )}
           </CardContent>
@@ -247,9 +247,9 @@ export default function AdminContactsPage() {
        {replyingTo && (
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Répondre à {replyingTo.fullName}</DialogTitle>
+            <DialogTitle>Reply to {replyingTo.fullName}</DialogTitle>
             <DialogDescription>
-              Votre message sera envoyé à {replyingTo.email}.
+              Your message will be sent to {replyingTo.email}.
             </DialogDescription>
           </DialogHeader>
           <ReplyForm
