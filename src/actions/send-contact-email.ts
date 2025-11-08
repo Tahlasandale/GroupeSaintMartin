@@ -14,6 +14,7 @@ const contactFormSchema = z.object({
 const RECIPIENT_EMAIL = 'ziduweuliqui-7545@yopmail.com';
 
 export async function sendContactEmail(formData: unknown) {
+  console.log('Processing contact submission...');
   const parsedData = contactFormSchema.safeParse(formData);
 
   if (!parsedData.success) {
@@ -26,6 +27,7 @@ export async function sendContactEmail(formData: unknown) {
   try {
     // 1. Save to Firestore
     try {
+      console.log('Initializing Firebase and preparing to save submission...');
       const { firestore } = initializeFirebase();
       const submissionData = {
         fullName,
@@ -35,16 +37,15 @@ export async function sendContactEmail(formData: unknown) {
       };
       const submissionsCollection = collection(firestore, 'contact-submissions');
       await addDoc(submissionsCollection, submissionData);
-      console.log('Contact submission saved to Firestore.');
+      console.log('Contact submission successfully saved to Firestore.');
     } catch (dbError) {
       console.error('Firestore error while saving contact submission:', dbError);
-      // We can decide if we still want to send the email even if DB save fails.
-      // For now, we'll throw to be caught by the outer catch block.
       throw new Error('Failed to save submission to database.');
     }
 
     // 2. Send email
     try {
+      console.log('Preparing to send contact email...');
       await sendEmail({
         to: RECIPIENT_EMAIL,
         subject: `New Contact Form Submission from ${fullName}`,
@@ -68,7 +69,6 @@ export async function sendContactEmail(formData: unknown) {
     return { success: true };
   } catch (error) {
     console.error('Failed to process the submission:', error);
-    // This will now catch more specific errors from the inner try/catch blocks
     return { success: false, error: 'Failed to process the submission.' };
   }
 }
