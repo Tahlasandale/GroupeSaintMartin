@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 import { Leaf, Loader2 } from 'lucide-react';
 import { sendEmail } from '@/lib/email';
 import { useDoc } from '@/firebase';
+import Link from 'next/link';
 
 const emailSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required.' }),
@@ -131,6 +132,11 @@ export default function SendEmailPage() {
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
+      <Button asChild variant="outline" className="mb-4">
+          <Link href="/admin/dashboard">
+            &larr; Back to dashboard
+          </Link>
+        </Button>
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Send Email to Pre-registrations</CardTitle>
