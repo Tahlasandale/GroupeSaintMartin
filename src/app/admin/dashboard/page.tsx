@@ -3,7 +3,7 @@
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Leaf, Shield, Mail } from 'lucide-react';
+import { Leaf, Shield, Mail, Users } from 'lucide-react';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -49,11 +49,17 @@ export default function AdminDashboardPage() {
         <p className="mt-2 text-muted-foreground">
           Welcome, {user?.email || 'Admin'}. You have special privileges.
         </p>
-        <div className="mt-6">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Button asChild>
             <Link href="/admin/send-email">
               <Mail className="mr-2 h-4 w-4" />
-              Send Email to Pre-registrations
+              Send Bulk Email
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/contacts">
+              <Users className="mr-2 h-4 w-4" />
+              View Contacts
             </Link>
           </Button>
         </div>

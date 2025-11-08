@@ -76,11 +76,13 @@ service cloud.firestore {
     /**
      * @description Allows public write for contact form submissions.
      * @path /contact-submissions/{submissionId}
-     * @allow (read, update, delete) - Disallow reading, updating, or deleting by clients.
+     * @allow (read, list) - Only admins can read contact submissions.
+     * @allow (update, delete) - Disallow updating or deleting by clients.
      * @allow (create) - Allow anyone to create a new contact submission.
      */
     match /contact-submissions/{submissionId} {
-      allow read, update, delete: if false;
+      allow read, list: if isAdmin();
+      allow update, delete: if false;
       allow create: if isValidContactSubmissionRequest();
     }
   }

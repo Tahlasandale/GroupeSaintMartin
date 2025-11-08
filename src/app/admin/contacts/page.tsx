@@ -1,0 +1,142 @@
+'use client';
+
+import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { doc, collection, query, orderBy } from 'firebase/firestore';
+import { formatDistanceToNow } from 'date-fns';
+
+import { Leaf, Users } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
+type ContactSubmission = {
+  id: string;
+  fullName: string;
+  email: string;
+  message: string;
+  createdAt: string;
+};
+
+export default function AdminContactsPage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const firestore = useFirestore();
+
+  // Admin access check
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [user, firestore]
+  );
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  // Fetch contact submissions
+  const contactsQuery = useMemoFirebase(
+    () =>
+      firestore
+        ? query(collection(firestore, 'contact-submissions'), orderBy('createdAt', 'desc'))
+        : null,
+    [firestore]
+  );
+  const { data: contacts, isLoading: areContactsLoading, error: contactsError } = useCollection<ContactSubmission>(contactsQuery);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+
+    if (!isUserDataLoading && userData) {
+      if (!(userData as any).isAdmin) {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, isUserLoading, userData, isUserDataLoading, router]);
+
+  if (isUserLoading || isUserDataLoading || areContactsLoading) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <Leaf className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!userData || !(userData as any).isAdmin) {
+    return null; // or a redirect component
+  }
+
+  return (
+    <div className="container mx-auto py-12 px-4 md:px-6">
+       <Button asChild variant="outline" className="mb-4">
+        <Link href="/admin/dashboard">
+          &larr; Back to Admin Dashboard
+        </Link>
+      </Button>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Users className="h-6 w-6" />
+            <CardTitle>Contact Form Submissions</CardTitle>
+          </div>
+          <CardDescription>
+            Here are the messages submitted through the contact form.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {contactsError && (
+              <div className="text-destructive p-4 bg-destructive/10 rounded-md">
+                  <p><b>Error loading contacts:</b> {contactsError.message}</p>
+                  <p className="mt-2 text-sm">Please ensure your Firestore security rules allow administrators to read the `contact-submissions` collection.</p>
+              </div>
+          )}
+          {!contactsError && contacts && contacts.length > 0 && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[180px]">Date</TableHead>
+                  <TableHead className="w-[200px]">From</TableHead>
+                  <TableHead>Message</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contacts.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell>
+                      <div className="font-medium">
+                        {formatDistanceToNow(new Date(submission.createdAt), { addSuffix: true })}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(submission.createdAt).toLocaleString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{submission.fullName}</div>
+                      <a href={`mailto:${submission.email}`} className="text-sm text-muted-foreground hover:text-primary">
+                        {submission.email}
+                      </a>
+                    </TableCell>
+                    <TableCell className="whitespace-pre-wrap">{submission.message}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+           )}
+           {!contactsError && contacts && contacts.length === 0 && (
+              <div className="text-center text-muted-foreground py-12">
+                  <p>No contact submissions yet.</p>
+              </div>
+           )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
