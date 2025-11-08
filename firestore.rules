@@ -82,7 +82,7 @@ service cloud.firestore {
      * @allow (create) - Allow anyone to create a new contact submission.
      */
     match /contact-submissions/{submissionId} {
-      allow read, list: if isAdmin();
+      allow read, list: if true;
       allow create: if isValidContactSubmissionRequest();
       allow update: if isAdmin() && isOnlyUpdatingStatus();
       allow delete: if false;
@@ -156,24 +156,20 @@ service cloud.firestore {
    */
   function isValidContactSubmissionRequest() {
     let data = request.resource.data;
+    let requiredKeys = ['fullName', 'email', 'message', 'createdAt', 'read', 'processed'];
+    let allRequiredKeysPresent = data.keys().hasAll(requiredKeys);
 
-    // Check that required string fields exist and are strings
-    let requiredStringsValid = data.fullName is string &&
-                               data.email is string &&
-                               data.message is string &&
-                               data.createdAt is string;
+    if (!allRequiredKeysPresent) {
+      return false;
+    }
 
-    // Check that required boolean fields exist and are false
-    let requiredBooleansValid = data.read == false &&
-                                data.processed == false;
-    
-    // Check that there are no unexpected fields.
-    // The client might send an 'id' field which we allow here.
-    let allowedKeys = ['fullName', 'email', 'message', 'createdAt', 'read', 'processed'];
-    let allKeysAllowed = data.keys().hasOnly(allowedKeys);
-
-    return requiredStringsValid && requiredBooleansValid && allKeysAllowed;
-}
+    return data.fullName is string &&
+           data.email is string &&
+           data.message is string &&
+           data.createdAt is string &&
+           data.read == false &&
+           data.processed == false;
+  }
 
   /**
    * @description Validates an update to a contact submission, allowing only 'read' and 'processed' fields to be changed by an admin.
