@@ -44,7 +44,7 @@ export function Navbar() {
       </Button>
       <Button variant="link" asChild>
         <Link href="/abonnement" prefetch={false} onClick={handleLinkClick}>
-          Abonnement
+          Subscription
         </Link>
       </Button>
       <Button variant="link" asChild>
