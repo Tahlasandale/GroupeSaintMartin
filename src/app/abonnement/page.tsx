@@ -71,7 +71,7 @@ export default function SubscriptionPage() {
     <Dialog open={isQuoteModalOpen} onOpenChange={setIsQuoteModalOpen}>
       <div className="container mx-auto py-12 px-4 md:px-6">
         <div className="flex flex-col items-center text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Choose your subscription
           </h1>
           <p className="mt-4 max-w-2xl text-muted-foreground md:text-xl">
@@ -132,7 +132,7 @@ export default function SubscriptionPage() {
           ))}
         </div>
       </div>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Contact Us</DialogTitle>
           <DialogDescription>
