@@ -9,7 +9,7 @@ const contactFormSchema = z.object({
   message: z.string(),
 });
 
-const RECIPIENT_EMAIL = 'alt.s2-cob4i0xv@yopmail.fr';
+const RECIPIENT_EMAIL = 'humbartdev.recive.unsterile356@passinbox.com';
 
 export async function sendContactEmail(formData: unknown) {
   const parsedData = contactFormSchema.safeParse(formData);
