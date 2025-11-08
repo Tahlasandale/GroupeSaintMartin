@@ -26,15 +26,11 @@ service cloud.firestore {
       return isOwner && isNotChangingAdminStatus;
     }
     
+    // Checks if the only fields being updated are 'read' and/or 'processed'.
     function isOnlyUpdatingStatus() {
-      let incomingData = request.resource.data;
-      let existingData = resource.data;
-      let allowedUpdateKeys = ['read', 'processed'];
-      let updatingKeys = incomingData.keys().diff(existingData.keys());
-
-      return updatingKeys.hasOnly(allowedUpdateKeys);
+      return request.resource.data.keys().hasOnly(['read', 'processed']);
     }
-    
+
     // --- Collection Rules ---
 
     match /users/{userId} {
