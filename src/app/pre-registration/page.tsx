@@ -87,15 +87,15 @@ export default function PreRegistrationPage() {
     <div className="container mx-auto flex items-center justify-center py-12 px-4 md:px-6">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Join our waiting list</CardTitle>
+          <CardTitle className="text-3xl font-bold">Rejoignez notre liste d'attente</CardTitle>
           <CardDescription className="pt-2">
-            Be the first to know when our revolutionary app launches! Promises, blah blah, you'll love it.
+            Soyez parmi les premiers à découvrir nos activités scoutes ! Restez informé de nos événements et camps.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isSubmitted ? (
             <div className="text-center text-lg font-medium text-primary">
-              <p>Thank you! Your email has been successfully registered.</p>
+              <p>Merci ! Votre email a été enregistré avec succès.</p>
             </div>
           ) : (
             <Form {...form}>
@@ -105,7 +105,7 @@ export default function PreRegistrationPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email address</FormLabel>
+                      <FormLabel>Adresse email</FormLabel>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <FormControl>
@@ -123,7 +123,7 @@ export default function PreRegistrationPage() {
                 />
                 <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Pre-register
+                  Pré-inscrire
                 </Button>
               </form>
             </Form>

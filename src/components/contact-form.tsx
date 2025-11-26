@@ -23,10 +23,10 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 
 const contactFormSchema = z.object({
-  fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  subject: z.string().min(5, { message: 'Subject must be at least 5 characters.' }),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
+  fullName: z.string().min(2, { message: 'Le nom complet doit contenir au moins 2 caractères.' }),
+  email: z.string().email({ message: 'Veuillez saisir une adresse email valide.' }),
+  subject: z.string().min(5, { message: 'Le sujet doit contenir au moins 5 caractères.' }),
+  message: z.string().min(10, { message: 'Le message doit contenir au moins 10 caractères.' }),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -78,8 +78,8 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
 
       if (result.success) {
         toast({
-          title: 'Message Sent!',
-          description: 'Thank you for contacting us. We will get back to you shortly.',
+          title: 'Message envoyé !',
+          description: 'Merci de nous avoir contactés. Nous vous répondrons dans les plus brefs délais.',
         });
         form.reset();
         onFormSubmit?.();
@@ -87,8 +87,8 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
         // If email sending fails, inform the user but the data is still saved.
         toast({
           variant: 'destructive',
-          title: 'Email Sending Error',
-          description: result.error || 'Your message was saved, but we could not send the email notification.',
+          title: 'Erreur d\'envoi d\'email',
+          description: result.error || 'Votre message a été sauvegardé, mais nous n\'avons pas pu envoyer la notification par email.',
         });
       }
     } catch (error) {
@@ -96,8 +96,8 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
       console.error("Error saving contact submission: ", error);
       toast({
         variant: 'destructive',
-        title: 'Submission Error',
-        description: 'Could not save your message. Please check your connection and try again.',
+        title: 'Erreur de soumission',
+        description: 'Impossible de sauvegarder votre message. Vérifiez votre connexion et réessayez.',
       });
     } finally {
       setIsLoading(false);
@@ -112,9 +112,9 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
           name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>Nom complet</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Jean Dupont" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -127,7 +127,7 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="john.doe@example.com" {...field} />
+                <Input placeholder="jean.dupont@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -138,9 +138,9 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
           name="subject"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Subject</FormLabel>
+              <FormLabel>Sujet</FormLabel>
               <FormControl>
-                <Input placeholder="Regarding..." {...field} />
+                <Input placeholder="Concernant..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -154,7 +154,7 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
               <FormLabel>Message</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Your message here..."
+                  placeholder="Votre message ici..."
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -165,7 +165,7 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
         />
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Send Message
+          Envoyer le message
         </Button>
       </form>
     </Form>

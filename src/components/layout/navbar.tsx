@@ -48,13 +48,18 @@ export function Navbar() {
         </Link>
       </Button>
       <Button variant="link" asChild>
+        <Link href="/carnet-chants" prefetch={false} onClick={handleLinkClick}>
+          Carnet de chants
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
         <Link href="/contacts" prefetch={false} onClick={handleLinkClick}>
           Contacts
         </Link>
       </Button>
       <Button asChild variant="outline">
         <Link href="/login" prefetch={false} onClick={handleLinkClick}>
-          Connexion
+          Se connecter
         </Link>
       </Button>
     </>
@@ -104,7 +109,7 @@ export function Navbar() {
       </Button>
       <Button variant="ghost" onClick={handleSignOut}>
         <LogOut className="mr-2 h-4 w-4" />
-        Déconnexion
+        Se déconnecter
       </Button>
     </>
   );
