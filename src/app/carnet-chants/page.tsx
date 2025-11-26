@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { Music, Plus, Search } from 'lucide-react';
+import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { Music, Plus, Search, Edit, Trash2, Check } from 'lucide-react';
 import { AddChantForm } from '@/components/add-chant-form';
 
 interface Chant {
@@ -18,6 +19,7 @@ interface Chant {
   paroles: string;
   branche: string;
   ambiance: string;
+  validated?: boolean;
 }
 
 export default function CarnetChantsPage() {
@@ -32,6 +34,14 @@ export default function CarnetChantsPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
+  // Get user document to check admin status
+  const userDocRef = useMemo(() =>
+    user ? doc(firestore, 'users', user.uid) : null,
+    [firestore, user?.uid]
+  );
+  const { data: userData } = useDoc(userDocRef);
+  const isAdmin = userData?.isAdmin === true;
+
   const handleAddChant = () => {
     if (user) {
       setIsAddModalOpen(true);
@@ -42,8 +52,35 @@ export default function CarnetChantsPage() {
 
   const handleAddSuccess = () => {
     setIsAddModalOpen(false);
-    // Optionally refresh the chants list
+    // Refresh the chants list
     fetchChants();
+  };
+
+  const handleValidateChant = async (chantId: string, validated: boolean) => {
+    try {
+      const chantRef = doc(firestore, 'chants', chantId);
+      await updateDoc(chantRef, { validated });
+      fetchChants();
+    } catch (error) {
+      console.error('Error updating chant validation:', error);
+    }
+  };
+
+  const handleDeleteChant = async (chantId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce chant ?')) {
+      try {
+        const chantRef = doc(firestore, 'chants', chantId);
+        await deleteDoc(chantRef);
+        fetchChants();
+      } catch (error) {
+        console.error('Error deleting chant:', error);
+      }
+    }
+  };
+
+  const handleEditChant = (chantId: string) => {
+    // TODO: Implement edit functionality
+    console.log('Edit chant:', chantId);
   };
 
   const fetchChants = async () => {
@@ -171,20 +208,64 @@ export default function CarnetChantsPage() {
             filteredChants.map((chant) => (
               <div
                 key={chant.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                className="group flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors relative"
                 onClick={() => router.push(`/carnet-chants/${chant.id}`)}
               >
                 <div className="flex items-center space-x-3">
                   <Music className="h-5 w-5 text-primary" />
                   <div>
-                    <h3 className="font-medium">{chant.titre}</h3>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-medium">{chant.titre}</h3>
+                      {chant.validated && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <Check className="w-3 h-3 mr-1" />
+                          Validé
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {chant.branche} • {chant.ambiance}
                     </p>
                   </div>
                 </div>
-                <div className="text-muted-foreground">
-                  →
+                <div className="flex items-center space-x-2">
+                  {isAdmin && (
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
+                      <input
+                        type="checkbox"
+                        checked={chant.validated || false}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleValidateChant(chant.id, e.target.checked);
+                        }}
+                        className="w-4 h-4"
+                        title="Marquer comme validé"
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditChant(chant.id);
+                        }}
+                        className="p-1 hover:bg-muted rounded"
+                        title="Modifier"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteChant(chant.id);
+                        }}
+                        className="p-1 hover:bg-red-100 text-red-600 rounded"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                  <div className="text-muted-foreground">
+                    →
+                  </div>
                 </div>
               </div>
             ))

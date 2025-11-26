@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 
@@ -45,6 +45,7 @@ export function AddChantForm({ onSuccess }: AddChantFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user } = useUser();
 
   const form = useForm<ChantFormValues>({
     resolver: zodResolver(chantSchema),
@@ -64,6 +65,8 @@ export function AddChantForm({ onSuccess }: AddChantFormProps) {
       await addDocumentNonBlocking(chantsRef, {
         ...values,
         createdAt: new Date().toISOString(),
+        createdBy: user?.uid,
+        validated: false,
       });
 
       toast({
