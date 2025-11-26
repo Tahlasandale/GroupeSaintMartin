@@ -30,48 +30,86 @@ export function Navbar() {
     setIsSheetOpen(false);
   };
 
-  const navLinks = (
+  const publicNavLinks = (
     <>
       <Button variant="link" asChild>
-        <Link href="/pre-registration" prefetch={false} onClick={handleLinkClick}>
-          Pre-registration
+        <Link href="/qui-sommes-nous" prefetch={false} onClick={handleLinkClick}>
+          Qui sommes-nous
         </Link>
       </Button>
+      <Button variant="link" asChild>
+        <Link href="/activites" prefetch={false} onClick={handleLinkClick}>
+          Activités
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
+        <Link href="/contacts" prefetch={false} onClick={handleLinkClick}>
+          Contacts
+        </Link>
+      </Button>
+      <Button asChild variant="outline">
+        <Link href="/login" prefetch={false} onClick={handleLinkClick}>
+          Connexion
+        </Link>
+      </Button>
+    </>
+  );
+
+  const authNavLinks = (
+    <>
       <Button variant="link" asChild>
         <Link href="/dashboard" prefetch={false} onClick={handleLinkClick}>
           Dashboard
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/abonnement" prefetch={false} onClick={handleLinkClick} key="subscription-link">
-          Subscription
+        <Link href="/lieux" prefetch={false} onClick={handleLinkClick}>
+          Lieux
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/template" prefetch={false} onClick={handleLinkClick}>
-          Template
+        <Link href="/carnet-chants" prefetch={false} onClick={handleLinkClick}>
+          Carnet de chants
         </Link>
       </Button>
-      {user ? (
-        <Button variant="ghost" onClick={handleSignOut}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
-        </Button>
-      ) : (
-        <Button asChild variant="default">
-          <Link href="/login" prefetch={false} onClick={handleLinkClick}>
-            Sign In
-          </Link>
-        </Button>
-      )}
+      <Button variant="link" asChild>
+        <Link href="/jeux-veillee" prefetch={false} onClick={handleLinkClick}>
+          Jeux de veillée
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
+        <Link href="/textes-route" prefetch={false} onClick={handleLinkClick}>
+          Textes route
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
+        <Link href="/osl" prefetch={false} onClick={handleLinkClick}>
+          OSL
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
+        <Link href="/ressources-chefs" prefetch={false} onClick={handleLinkClick}>
+          Ressources chefs
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
+        <Link href="/carte-clan" prefetch={false} onClick={handleLinkClick}>
+          Carte du clan
+        </Link>
+      </Button>
+      <Button variant="ghost" onClick={handleSignOut}>
+        <LogOut className="mr-2 h-4 w-4" />
+        Déconnexion
+      </Button>
     </>
   );
+
+  const navLinks = user ? authNavLinks : publicNavLinks;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6 h-14 flex items-center">
       <Link href="/" className="flex items-center justify-center mr-auto" prefetch={false}>
-        <Leaf className="h-6 w-6 text-primary" />
-        <span className="ml-2 text-lg font-bold text-primary font-headline">AuthZen</span>
+        <span className="text-lg font-bold text-primary font-headline">🏕️ Groupe Saint Martin</span>
       </Link>
       
       {/* Desktop Navigation */}

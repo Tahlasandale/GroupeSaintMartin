@@ -1,0 +1,97 @@
+'use client';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+export default function ActivitesPage() {
+  return (
+    <div className="container mx-auto py-12 px-4 md:px-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-8">Activités</h1>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Camps</CardTitle>
+            <CardDescription>Découvrez nos camps annuels</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-muted-foreground">Galerie photos camps</span>
+              </div>
+              <div>
+                <p className="text-muted-foreground mb-4">
+                  Chaque année, nos branches organisent des camps d'été inoubliables
+                  où les jeunes développent leur autonomie et leur esprit d'équipe.
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                  <li>Camp LL : Aventure en forêt</li>
+                  <li>Camp SG : Raid nature</li>
+                  <li>Camp RGA : Projet humanitaire</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Sorties</CardTitle>
+            <CardDescription>Activités régulières des branches</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold">🐺 Louveteaux / Louvettes</h4>
+                <p className="text-sm text-muted-foreground">Sorties nature, jeux en forêt, veillées</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">🔥 Scouts / Guides</h4>
+                <p className="text-sm text-muted-foreground">Randonnées, activités manuelles, service communautaire</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">🛡️ Routiers / Guides Aînées</h4>
+                <p className="text-sm text-muted-foreground">Projets de service, formations, échanges</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Projets de service routiers</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Nos routiers s'engagent dans des projets concrets au service de la communauté :
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              <li>Aide aux personnes âgées du quartier</li>
+              <li>Nettoyage des espaces naturels</li>
+              <li>Collectes solidaires</li>
+              <li>Animations pour les plus jeunes</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Moments marquants</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-muted-foreground">Événement 1</span>
+              </div>
+              <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-muted-foreground">Événement 2</span>
+              </div>
+              <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-muted-foreground">Événement 3</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
