@@ -8,8 +8,8 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Grande bannière */}
-      <section className="relative h-96 bg-gradient-to-r from-green-600 to-blue-600 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative h-96 bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: 'url(/drapeau-ile-de-france.png)' }}>
+        <div className="absolute inset-0 bg-black/30"></div>
         <div className="relative z-10 text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             Bienvenue au Groupe Saint Martin de Brethencourt

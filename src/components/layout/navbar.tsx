@@ -109,7 +109,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6 h-14 flex items-center">
       <Link href="/" className="flex items-center justify-center mr-auto" prefetch={false}>
-        <span className="text-lg font-bold text-primary font-headline">🏕️ Groupe Saint Martin</span>
+        <img src="/favicon.png" alt="Groupe Saint Martin" className="h-8 w-8 mr-2" />
+        <span className="text-lg font-bold text-primary font-headline">Groupe Saint Martin</span>
       </Link>
       
       {/* Desktop Navigation */}
@@ -132,7 +133,7 @@ export function Navbar() {
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
               <Button variant="link" asChild>
-                <Link href="/" prefetch-={false} onClick={handleLinkClick} className="flex items-center justify-start">
+                <Link href="/" prefetch={false} onClick={handleLinkClick} className="flex items-center justify-start">
                   <Home className="mr-2 h-4 w-4" />
                   Home
                 </Link>
