@@ -22,12 +22,35 @@ export default function ActivitesPage() {
                 <p className="text-muted-foreground mb-4">
                   Chaque année, nos branches organisent des camps d'été inoubliables
                   où les jeunes développent leur autonomie et leur esprit d'équipe.
+                  Les enfants préparent cet objectif toute l'année.
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                  <li>Camp LL : Aventure en forêt</li>
-                  <li>Camp SG : Raid nature</li>
-                  <li>Camp RGA : Projet humanitaire</li>
-                </ul>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p><strong>Durées par branche :</strong></p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>Louveteaux/Louvettes : 5 à 11 jours</li>
+                    <li>Scouts/Guides : 3 semaines</li>
+                    <li>Routiers/Guides Aînées : 3 semaines avec projets spécifiques</li>
+                  </ul>
+                  <p className="mt-2"><strong>Camps de Pâques :</strong> D'une période d'une semaine</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Rythme des activités</CardTitle>
+            <CardDescription>Organisation des sorties et camps</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Les groupes Saint-Louis, Saint-François, Sainte-Geneviève et Sainte-Claire ont décidé de planifier leurs activités conjointement, et dans la même zone géographique. Les activités ont donc lieu, autant que possible, aux mêmes week-ends, dans un périmètre rapproché afin de faciliter l'organisation des familles et ainsi concilier scoutisme et vie familiale.
+              </p>
+              <div className="bg-muted p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Fréquence :</h4>
+                <p className="text-sm text-muted-foreground">En moyenne, les activités ont lieu tous les mois. Elles peuvent durer le temps d'un week-end ou d'une sortie (fixée le dimanche).</p>
               </div>
             </div>
           </CardContent>

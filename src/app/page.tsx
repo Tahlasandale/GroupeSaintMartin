@@ -32,20 +32,20 @@ export default function Home() {
               <div className="text-center p-6 border rounded-lg">
                 <div className="text-6xl mb-4">🐺</div>
                 <h3 className="text-xl font-semibold mb-2">Louveteaux / Louvettes</h3>
-                <p className="text-muted-foreground">8-11 ans</p>
-                <p className="text-sm mt-2">Méthode LL - Aventures en meute</p>
+                <p className="text-muted-foreground">8 à 12 ans</p>
+                <p className="text-sm mt-2">Branche jaune - Méthode adaptée aux plus jeunes</p>
               </div>
               <div className="text-center p-6 border rounded-lg">
                 <div className="text-6xl mb-4">🔥</div>
                 <h3 className="text-xl font-semibold mb-2">Scouts / Guides</h3>
-                <p className="text-muted-foreground">11-14 ans</p>
-                <p className="text-sm mt-2">Méthode SG - Éclaireurs de la nature</p>
+                <p className="text-muted-foreground">12 à 17 ans</p>
+                <p className="text-sm mt-2">Branche verte - Développement de l'autonomie</p>
               </div>
               <div className="text-center p-6 border rounded-lg">
                 <div className="text-6xl mb-4">🛡️</div>
                 <h3 className="text-xl font-semibold mb-2">Routiers / Guides Aînées</h3>
-                <p className="text-muted-foreground">14-17 ans</p>
-                <p className="text-sm mt-2">Route R/GA - Service et engagement</p>
+                <p className="text-muted-foreground">17 à 22 ans</p>
+                <p className="text-sm mt-2">Branche rouge - Engagement et service</p>
               </div>
             </div>
           </CardContent>

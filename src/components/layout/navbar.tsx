@@ -38,6 +38,11 @@ export function Navbar() {
         </Link>
       </Button>
       <Button variant="link" asChild>
+        <Link href="/le-scoutisme-a-saint-martin" prefetch={false} onClick={handleLinkClick}>
+          Le scoutisme à Saint-Martin
+        </Link>
+      </Button>
+      <Button variant="link" asChild>
         <Link href="/activites" prefetch={false} onClick={handleLinkClick}>
           Activités
         </Link>

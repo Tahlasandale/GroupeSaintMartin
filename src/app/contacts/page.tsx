@@ -41,30 +41,44 @@ export default function ContactsPage() {
 
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Contacts maîtrises</CardTitle>
+            <CardTitle>Contacts par groupe</CardTitle>
+            <CardDescription>Chefs de groupe Europa Scouts</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold">🐺 Louveteaux / Louvettes</h4>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Phone className="h-3 w-3" />
-                  <span>Maître LL : Jean Dupont - 01 23 45 67 89</span>
+            <div className="space-y-6">
+              <div className="border-l-4 border-blue-500 pl-4">
+                <h4 className="font-semibold text-lg">Garçons</h4>
+                <p className="text-sm text-muted-foreground mb-2">Groupes Saint-Louis et Saint-François</p>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Mail className="h-3 w-3" />
+                    <span>europa.saintmartin1@gmail.com</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Phone className="h-3 w-3" />
+                    <span>Hugues Bothier (chef de groupe) - 06 58 36 69 54</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h4 className="font-semibold">🔥 Scouts / Guides</h4>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Phone className="h-3 w-3" />
-                  <span>Maître SG : Marie Martin - 01 23 45 67 90</span>
+              <div className="border-l-4 border-pink-500 pl-4">
+                <h4 className="font-semibold text-lg">Filles</h4>
+                <p className="text-sm text-muted-foreground mb-2">Groupes Sainte-Geneviève et Sainte-Claire</p>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Mail className="h-3 w-3" />
+                    <span>europa.saintmartin2@gmail.com</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Phone className="h-3 w-3" />
+                    <span>Marie-Amélie Brocard (cheftaine de groupe) - 06 28 29 45 19</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h4 className="font-semibold">🛡️ Routiers / Guides Aînées</h4>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Phone className="h-3 w-3" />
-                  <span>Maître RGA : Pierre Durand - 01 23 45 67 91</span>
-                </div>
+              <div className="bg-muted p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Note :</strong> L'aspect financier ne doit pas constituer un obstacle à l'inscription des enfants au scoutisme.
+                  N'hésitez pas à contacter les chefs de groupe si vous souhaitez en connaître davantage avant d'inscrire vos enfants.
+                </p>
               </div>
             </div>
           </CardContent>

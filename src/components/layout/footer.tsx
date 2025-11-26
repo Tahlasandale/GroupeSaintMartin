@@ -14,7 +14,7 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="grid md:grid-cols-3 gap-8 items-center">
           <div className="text-center md:text-left">
-            <div className="text-lg font-bold text-primary mb-2">🏕️ Groupe Saint Martin</div>
+            <div className="text-lg font-bold text-primary mb-2">Groupe Saint Martin</div>
             <p className="text-sm text-muted-foreground italic">
               "Toujours Prêt – Groupe Saint Martin de Brethencourt"
             </p>
@@ -61,10 +61,7 @@ export function Footer() {
           <div className="text-center md:text-right">
             <p className="text-sm text-muted-foreground mb-2">Suivez-nous</p>
             <div className="flex justify-center md:justify-end gap-4">
-              <Link href="#" className="text-muted-foreground hover:text-foreground">
-                📘 Facebook
-              </Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground">
+              <Link href="https://www.instagram.com/grp_st_martin_brethencourt/" className="text-muted-foreground hover:text-foreground">
                 📷 Instagram
               </Link>
             </div>
