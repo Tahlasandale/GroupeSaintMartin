@@ -1,8 +1,42 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useUser, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 export default function OSLPage() {
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  const router = useRouter();
+
+  // Get user document to check admin status
+  const userDocRef = useMemo(() =>
+    user ? doc(firestore, 'users', user.uid) : null,
+    [firestore, user?.uid]
+  );
+  const { data: userData } = useDoc(userDocRef);
+  const isAdmin = userData?.isAdmin === true;
+
+  useEffect(() => {
+    if (!isUserLoading && (!user || !isAdmin)) {
+      router.push('/dashboard');
+    }
+  }, [user, isAdmin, isUserLoading, router]);
+
+  if (isUserLoading) {
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="text-center">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return null;
+  }
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="max-w-4xl mx-auto">

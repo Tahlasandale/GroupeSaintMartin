@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import { Leaf, LogOut, Menu, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, useFirestore } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
@@ -12,8 +15,17 @@ import { useState } from 'react';
 export function Navbar() {
   const { user } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Get user document to check admin status
+  const userDocRef = useMemo(() =>
+    user ? doc(firestore, 'users', user.uid) : null,
+    [firestore, user?.uid]
+  );
+  const { data: userData } = useDoc(userDocRef);
+  const isAdmin = userData?.isAdmin === true;
 
   const handleSignOut = async () => {
     try {
@@ -92,11 +104,13 @@ export function Navbar() {
           Textes route
         </Link>
       </Button>
-      <Button variant="link" asChild>
-        <Link href="/osl" prefetch={false} onClick={handleLinkClick}>
-          OSL
-        </Link>
-      </Button>
+      {isAdmin && (
+        <Button variant="link" asChild>
+          <Link href="/osl" prefetch={false} onClick={handleLinkClick}>
+            OSL
+          </Link>
+        </Button>
+      )}
       <Button variant="link" asChild>
         <Link href="/ressources-chefs" prefetch={false} onClick={handleLinkClick}>
           Ressources chefs
