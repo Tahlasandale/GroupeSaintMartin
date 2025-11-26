@@ -86,8 +86,14 @@ export default function ChantDetailPage() {
               <div className="flex items-center">
                 <Music className="mr-3 h-8 w-8 text-primary" />
                 <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <CardTitle className="text-3xl">{chant.titre}</CardTitle>
+                  <CardTitle className="text-3xl mb-3">{chant.titre}</CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                      {chant.branche}
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                      {chant.ambiance}
+                    </span>
                     {chant.validated && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                         <Check className="w-4 h-4 mr-1" />
@@ -95,15 +101,9 @@ export default function ChantDetailPage() {
                       </span>
                     )}
                   </div>
-                  <CardDescription className="text-lg">
-                    {chant.branche} • {chant.ambiance}
-                  </CardDescription>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Badge variant="secondary">{chant.branche}</Badge>
-                <Badge variant="outline">{chant.ambiance}</Badge>
-              </div>
+              
             </div>
           </CardHeader>
           <CardContent>

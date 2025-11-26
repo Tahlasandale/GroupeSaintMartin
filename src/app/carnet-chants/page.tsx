@@ -214,15 +214,7 @@ export default function CarnetChantsPage() {
                 <div className="flex items-center space-x-3">
                   <Music className="h-5 w-5 text-primary" />
                   <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium">{chant.titre}</h3>
-                      {chant.validated && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <Check className="w-3 h-3 mr-1" />
-                          Validé
-                        </span>
-                      )}
-                    </div>
+                    <h3 className="font-medium">{chant.titre}</h3>
                     <p className="text-sm text-muted-foreground">
                       {chant.branche} • {chant.ambiance}
                     </p>
