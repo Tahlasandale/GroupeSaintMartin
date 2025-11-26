@@ -12,9 +12,6 @@ interface Chant {
   id: string;
   titre: string;
   paroles: string;
-  accords?: string;
-  audio?: string;
-  video?: string;
   branche: string;
   ambiance: string;
 }
