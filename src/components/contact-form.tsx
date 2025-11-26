@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { sendContactEmail } from '@/actions/send-contact-email';
+
 import { useFirestore } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
@@ -73,24 +73,12 @@ export function ContactForm({ initialSubject = '', onFormSubmit }: ContactFormPr
         processed: false,
       });
 
-      // 2. Send email via server action
-      const result = await sendContactEmail(values);
-
-      if (result.success) {
-        toast({
-          title: 'Message envoyé !',
-          description: 'Merci de nous avoir contactés. Nous vous répondrons dans les plus brefs délais.',
-        });
-        form.reset();
-        onFormSubmit?.();
-      } else {
-        // If email sending fails, inform the user but the data is still saved.
-        toast({
-          variant: 'destructive',
-          title: 'Erreur d\'envoi d\'email',
-          description: result.error || 'Votre message a été sauvegardé, mais nous n\'avons pas pu envoyer la notification par email.',
-        });
-      }
+      toast({
+        title: 'Message envoyé !',
+        description: 'Merci de nous avoir contactés. Votre message a été enregistré.',
+      });
+      form.reset();
+      onFormSubmit?.();
     } catch (error) {
       // This will catch errors from writing to Firestore
       console.error("Error saving contact submission: ", error);

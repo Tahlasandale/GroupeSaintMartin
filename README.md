@@ -14,7 +14,7 @@ npm install
 
 # Configurer les variables d'environnement
 cp .env.local.example .env.local
-# Configurer vos clés Firebase et SendGrid
+# Configurer vos clés Firebase
 
 # Lancer le serveur de développement
 npm run dev
@@ -123,10 +123,7 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=votre_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=votre_app_id
 
-# Configuration SendGrid
-SENDGRID_API_KEY=votre_sendgrid_api_key
-SENDGRID_VERIFIED_EMAIL=votre_email_verifie@example.com
-```
+
 
 ### Configuration Firebase
 
@@ -148,12 +145,7 @@ SENDGRID_VERIFIED_EMAIL=votre_email_verifie@example.com
 - **textes-route** : `titre`, `contenu`, `categorie`, `branche`
 - **users/{userId}/dashboards** : `userId`, données personnalisées du tableau de bord
 
-### Configuration SendGrid
 
-1. Créer un compte SendGrid sur [sendgrid.com](https://sendgrid.com)
-2. Générer une clé API
-3. Vérifier une adresse email expéditeur
-4. Ajouter les credentials dans `.env.local`
 
 ## 🚀 Scripts Disponibles
 
@@ -205,7 +197,7 @@ Ce site est adapté pour :
 - [Documentation Next.js](https://nextjs.org/docs)
 - [Documentation Firebase](https://firebase.google.com/docs)
 - [Documentation shadcn/ui](https://ui.shadcn.com/)
-- [Documentation SendGrid](https://docs.sendgrid.com/)
+
 
 ## 📄 Licence
 

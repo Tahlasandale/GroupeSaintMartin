@@ -6,7 +6,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 
-import { Leaf, Users, MessageSquare } from 'lucide-react';
+import { Leaf, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -22,15 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { ReplyForm } from '@/components/reply-form';
+
+
 import { updateDocumentNonBlocking, useDoc } from '@/firebase';
 
 type ContactSubmission = {
@@ -50,7 +43,6 @@ export default function AdminContactsPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const [filter, setFilter] = useState<FilterValue>('all');
-  const [replyingTo, setReplyingTo] = useState<ContactSubmission | null>(null);
 
   // Admin access check
   const userDocRef = useMemoFirebase(
@@ -116,8 +108,7 @@ export default function AdminContactsPage() {
    }
 
   return (
-    <Dialog onOpenChange={(isOpen) => !isOpen && setReplyingTo(null)}>
-      <div className="container mx-auto py-12 px-4 md:px-6">
+    <div className="container mx-auto py-12 px-4 md:px-6">
         <Button asChild variant="outline" className="mb-4">
           <Link href="/admin/dashboard">
             &larr; Back to dashboard
@@ -222,14 +213,9 @@ export default function AdminContactsPage() {
                               )}
                           </Tooltip>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <DialogTrigger asChild>
-                             <Button variant="outline" size="sm" onClick={() => setReplyingTo(submission)}>
-                               <MessageSquare className="mr-2 h-4 w-4" />
-                               Reply
-                             </Button>
-                          </DialogTrigger>
-                        </TableCell>
+                         <TableCell className="text-center">
+                           {/* Reply functionality removed */}
+                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -244,24 +230,5 @@ export default function AdminContactsPage() {
           </CardContent>
         </Card>
       </div>
-       {replyingTo && (
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reply to {replyingTo.fullName}</DialogTitle>
-            <DialogDescription>
-              Your message will be sent to {replyingTo.email}.
-            </DialogDescription>
-          </DialogHeader>
-          <ReplyForm
-            recipientEmail={replyingTo.email}
-            originalMessage={replyingTo.message}
-            onReplySent={() => {
-              handleStatusChange(replyingTo.id, 'processed', true);
-              setReplyingTo(null);
-            }}
-          />
-        </DialogContent>
-      )}
-    </Dialog>
   );
 }
