@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { ArrowLeft, Music } from 'lucide-react';
+import { ArrowLeft, Music, Check } from 'lucide-react';
 
 interface Chant {
   id: string;
@@ -86,7 +86,15 @@ export default function ChantDetailPage() {
               <div className="flex items-center">
                 <Music className="mr-3 h-8 w-8 text-primary" />
                 <div>
-                  <CardTitle className="text-3xl">{chant.titre}</CardTitle>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <CardTitle className="text-3xl">{chant.titre}</CardTitle>
+                    {chant.validated && (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <Check className="w-4 h-4 mr-1" />
+                        Validé
+                      </span>
+                    )}
+                  </div>
                   <CardDescription className="text-lg">
                     {chant.branche} • {chant.ambiance}
                   </CardDescription>
