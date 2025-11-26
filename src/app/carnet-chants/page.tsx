@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { Music, Play } from 'lucide-react';
+import { Music, Plus } from 'lucide-react';
 
 interface Chant {
   id: string;
@@ -22,7 +23,18 @@ export default function CarnetChantsPage() {
   const [brancheFilter, setBrancheFilter] = useState<string>('all');
   const [ambianceFilter, setAmbianceFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
+
+  const handleAddChant = () => {
+    if (user) {
+      // TODO: Navigate to add chant page
+      console.log('Ajouter un chant');
+    } else {
+      router.push('/login');
+    }
+  };
 
   useEffect(() => {
     const fetchChants = async () => {
@@ -70,7 +82,13 @@ export default function CarnetChantsPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Carnet de Chants</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Carnet de Chants</h1>
+          <Button onClick={handleAddChant}>
+            <Plus className="mr-2 h-4 w-4" />
+            {user ? 'Ajouter un chant' : 'Se connecter pour ajouter'}
+          </Button>
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <Select value={brancheFilter} onValueChange={setBrancheFilter}>
@@ -118,28 +136,8 @@ export default function CarnetChantsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="whitespace-pre-line text-sm mb-4">
+                  <div className="whitespace-pre-line text-sm">
                     {chant.paroles}
-                  </div>
-                  {chant.accords && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-sm mb-2">Accords :</h4>
-                      <p className="text-sm text-muted-foreground">{chant.accords}</p>
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    {chant.audio && (
-                      <Button variant="outline" size="sm">
-                        <Play className="mr-2 h-4 w-4" />
-                        Audio
-                      </Button>
-                    )}
-                    {chant.video && (
-                      <Button variant="outline" size="sm">
-                        <Play className="mr-2 h-4 w-4" />
-                        Vidéo
-                      </Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
