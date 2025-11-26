@@ -1,229 +1,216 @@
-# SaaS Template - Next.js 15 + Firebase + GenAI
+# 🏕️ Site Web Groupe Saint Martin de Brethencourt
 
-A comprehensive SaaS application template built with modern technologies to accelerate your SaaS development. Features complete authentication, admin dashboard, contact management, subscription system, and AI integration - everything you need to launch your SaaS product quickly.
+Site web officiel du Groupe Saint Martin de Brethencourt, unité scoute française. Présente les activités du groupe, permet aux membres de consulter les ressources internes et facilite la communication avec la communauté scoute.
 
-## 🚀 Quick Start
+## 🚀 Démarrage Rapide
 
 ```bash
-# Clone the repository
-git clone https://github.com/Tahlasandale/SaasTemplate.git
-cd SaasTemplate
+# Cloner le dépôt
+git clone https://github.com/Tahlasandale/GroupeSaintMartin.git
+cd GroupeSaintMartin
 
-# Install dependencies
+# Installer les dépendances
 npm install
 
-# Set up environment variables
+# Configurer les variables d'environnement
 cp .env.local.example .env.local
-# Configure your Firebase and SendGrid credentials
+# Configurer vos clés Firebase et SendGrid
 
-# Start development server
+# Lancer le serveur de développement
 npm run dev
 ```
 
-## ✨ Key Features
+## ✨ Fonctionnalités Principales
 
-### 🔐 Authentication & User Management
-- **Firebase Authentication** - Email/password and Google OAuth
-- **Role-based Access Control** - Admin and user roles
-- **Secure User Profiles** - User management with Firestore
-- **Session Management** - Persistent authentication state
+### 🔐 Politique d'Accès
+- **Login Wall** : Seules les pages vitrines sont publiques
+- **Authentification obligatoire** pour l'accès aux ressources internes
+- **Gestion des rôles** : Utilisateurs standards et administrateurs
 
-### 📊 Admin Dashboard
-- **Contact Management** - View and respond to user inquiries
-- **Email Campaigns** - Send bulk emails to subscribers
-- **User Analytics** - Track user engagement and activity
-- **Content Management** - Manage application content
+### 🌐 Site Vitrine (Public)
+- **Page d'accueil** - Présentation du groupe avec bannière, unités, actualités
+- **Qui sommes-nous** - Historique, valeurs, branches, photos de maîtrise
+- **Activités** - Camps, sorties, projets service, moments marquants
+- **Contacts** - Formulaire de contact, informations maîtrises, localisation
 
-### 💰 Subscription System
-- **Pricing Tiers** - Free and Pro subscription plans
-- **Payment Integration** - Ready for Stripe/Polar.sh integration
-- **Feature Gates** - Control access based on subscription level
-- **Upgrade Flows** - Seamless subscription management
+### 🔐 Espace Authentifié (Membres)
+- **Tableau de bord** - Accès rapide aux ressources, dernières actualités
+- **Lieux** - Liste des lieux utilisés par le groupe avec détails logistiques
+- **Carnet de chants** - Chants classés par branches et ambiance
+- **Jeux de veillée** - Jeux classés par énergie avec descriptions détaillées
+- **Textes route** - Textes spirituels pour R/GA et SG
+- **OSL** - Présentation de l'Ordre Saint Louis
+- **Ressources chefs** - Techniques scouts, pédagogie, checklists
+- **Carte du clan** - Carte interactive des camps et lieux historiques
 
-### 📧 Communication Tools
-- **Contact Forms** - User inquiry submission system
-- **Email Integration** - SendGrid-powered email delivery
-- **Reply Management** - Admin response system
-- **Email Templates** - Pre-built email templates
+### 🎨 Direction Artistique
+- **Palette** : Vert principal (#2E6B3A), vert foncé (#1F4728), blanc (#FFFFFF), bleu clair (#A7C6E8), bleu nuit (#093C5A)
+- **Style** : Design sobre, épuré, naturel avec icônes fines et formes arrondies
+- **Typographie** : Montserrat/Poppins pour titres, Inter/Roboto pour corps
 
-### 🤖 AI Integration
-- **Google GenAI** - AI/ML capabilities integration
-- **Intelligent Features** - Ready for AI-powered functionality
-- **Development Tools** - GenAI development environment
+## 🛠 Pile Technologique
 
-### 🎨 Modern UI/UX
-- **Responsive Design** - Mobile-first approach
-- **Accessible Components** - WCAG compliant UI components
-- **Dark/Light Themes** - Theme switching capability
-- **Modern Design System** - Consistent visual language
-
-## 🛠 Tech Stack
-
-### Core Framework
-- **[Next.js 15](https://nextjs.org/)** - React framework with App Router
-- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+### Framework Core
+- **[Next.js 15](https://nextjs.org/)** - Framework React avec App Router
+- **[TypeScript](https://www.typescriptlang.org/)** - JavaScript typé
 - **[Firebase](https://firebase.google.com/)** - Backend as a Service
-- **[Google GenAI](https://ai.google.dev/)** - AI/ML capabilities
 
 ### UI & Styling
-- **[shadcn/ui](https://ui.shadcn.com/)** - Modern component library
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Radix UI](https://www.radix-ui.com/)** - Accessible UI primitives
-- **[Lucide Icons](https://lucide.dev/)** - Beautiful icon set
+- **[shadcn/ui](https://ui.shadcn.com/)** - Bibliothèque de composants moderne
+- **[Tailwind CSS](https://tailwindcss.com/)** - Framework CSS utilitaire
+- **[Radix UI](https://www.radix-ui.com/)** - Primitives UI accessibles
+- **[Lucide Icons](https://lucide.dev/)** - Jeu d'icônes élégant
 
-### Forms & Validation
-- **[React Hook Form](https://react-hook-form.com/)** - Performant form handling
-- **[Zod](https://zod.dev/)** - Schema validation
-- **[date-fns](https://date-fns.org/)** - Date utilities
+### Formulaires & Validation
+- **[React Hook Form](https://react-hook-form.com/)** - Gestion performante des formulaires
+- **[Zod](https://zod.dev/)** - Validation de schémas
 
-### Development Tools
-- **ESLint** - Code linting
-- **TypeScript** - Type checking
-- **Prettier** - Code formatting
-- **Turbopack** - Fast development builds
+### Outils de Développement
+- **ESLint** - Linting du code
+- **TypeScript** - Vérification des types
+- **Turbopack** - Builds rapides en développement
 
-## 📁 Project Structure
+## 📁 Structure du Projet
 
 ```
 src/
-├── app/                          # Next.js App Router pages
-│   ├── admin/                    # Admin dashboard pages
-│   │   ├── contacts/            # Contact management
-│   │   ├── dashboard/           # Admin overview
-│   │   └── send-email/          # Email campaign tools
-│   ├── abonnement/              # Subscription pricing page
-│   ├── dashboard/               # User dashboard
-│   ├── login/                   # Authentication page
-│   ├── pre-registration/        # Lead capture form
-│   └── template/                # Template demonstration
-├── components/                   # Reusable UI components
-│   ├── ui/                      # shadcn/ui components
-│   ├── layout/                  # Layout components
-│   ├── contact-form.tsx         # Contact form component
-│   ├── reply-form.tsx           # Reply form component
-│   └── auth-form.tsx            # Authentication form
-├── actions/                      # Server actions
-│   ├── send-contact-email.ts    # Contact email handling
-│   └── send-reply-email.ts      # Reply email handling
-├── firebase/                     # Firebase integration
-│   ├── firestore/               # Firestore hooks and utilities
-│   ├── config.ts                # Firebase configuration
-│   ├── provider.tsx             # Firebase context provider
-│   └── non-blocking-*.tsx       # Optimized operations
-├── lib/                         # Utility functions
-│   ├── email.ts                 # Email service utilities
-│   └── utils.ts                 # General utilities
-├── hooks/                       # Custom React hooks
-└── ai/                          # AI/ML integration
-    ├── genkit.ts                # GenAI configuration
-    └── dev.ts                   # Development utilities
+├── app/                          # Pages Next.js App Router
+│   ├── admin/                    # Pages admin (contacts, dashboard, emails)
+│   ├── contacts/                 # Page contacts publique
+│   ├── activites/                # Page activités publique
+│   ├── qui-sommes-nous/          # Page présentation publique
+│   ├── login/                    # Page de connexion
+│   ├── dashboard/                # Tableau de bord membres
+│   ├── lieux/                    # Gestion des lieux
+│   ├── carnet-chants/            # Carnet de chants
+│   ├── jeux-veillee/             # Jeux de veillée
+│   ├── textes-route/             # Textes spirituels
+│   ├── osl/                      # Page Ordre Saint Louis
+│   ├── ressources-chefs/         # Ressources pédagogiques
+│   ├── carte-clan/               # Carte interactive du clan
+│   └── page.tsx                  # Page d'accueil
+├── components/                   # Composants UI réutilisables
+│   ├── ui/                      # Composants shadcn/ui
+│   ├── layout/                  # Composants de layout (navbar, footer)
+│   ├── contact-form.tsx         # Formulaire de contact
+│   └── auth-form.tsx            # Formulaire d'authentification
+├── actions/                      # Actions serveur
+│   ├── send-contact-email.ts    # Gestion emails de contact
+│   └── send-reply-email.ts      # Gestion réponses admin
+├── firebase/                     # Intégration Firebase
+│   ├── firestore/               # Hooks et utilitaires Firestore
+│   ├── config.ts                # Configuration Firebase
+│   ├── provider.tsx             # Provider de contexte Firebase
+│   └── non-blocking-*.tsx       # Opérations optimisées
+├── lib/                         # Fonctions utilitaires
+│   ├── email.ts                 # Utilitaires service email
+│   └── utils.ts                 # Utilitaires généraux
+└── hooks/                       # Hooks React personnalisés
 ```
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Variables d'Environnement
 
-Create a `.env.local` file with the following variables:
+Créer un fichier `.env.local` avec les variables suivantes :
 
 ```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+# Configuration Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=votre_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=votre_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=votre_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=votre_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=votre_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=votre_app_id
 
-# SendGrid Configuration
-SENDGRID_API_KEY=your_sendgrid_api_key
-SENDGRID_VERIFIED_EMAIL=your_verified_email@example.com
-
-# Google GenAI (Optional)
-GOOGLE_GENAI_API_KEY=your_genai_api_key
+# Configuration SendGrid
+SENDGRID_API_KEY=votre_sendgrid_api_key
+SENDGRID_VERIFIED_EMAIL=votre_email_verifie@example.com
 ```
 
-### Firebase Setup
+### Configuration Firebase
 
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable Authentication with Email/Password and Google providers
-3. Enable Firestore Database
-4. Copy your Firebase config to `.env.local`
+1. Créer un projet Firebase sur [console.firebase.google.com](https://console.firebase.google.com)
+2. Activer l'Authentification avec Email/Mot de passe
+3. Activer Firestore Database
+4. Copier la config Firebase dans `.env.local`
+5. Déployer les règles de sécurité : `firebase deploy --only firestore:rules`
 
-### SendGrid Setup
+### Schéma Base de Données
 
-1. Create a SendGrid account at [sendgrid.com](https://sendgrid.com)
-2. Generate an API key
-3. Verify a sender email address
-4. Add credentials to `.env.local`
+#### Collections Principales
+- **users** : `id`, `email`, `name`, `isAdmin`, `signUpDate`, `lastLogin`
+- **pre-registrations** : `email`, `createdAt`
+- **contact-submissions** : `fullName`, `email`, `subject`, `message`, `createdAt`, `read`, `processed`
+- **lieux** : `adresse`, `gps`, `photos`, `branche`, `notes`
+- **chants** : `titre`, `paroles`, `accords`, `audio`, `video`, `branche`, `ambiance`
+- **jeux-veillee** : `titre`, `description`, `duree`, `materiel`, `deroule`, `energie`, `categorie`
+- **textes-route** : `titre`, `contenu`, `categorie`, `branche`
+- **users/{userId}/dashboards** : `userId`, données personnalisées du tableau de bord
 
-## 🚀 Available Scripts
+### Configuration SendGrid
+
+1. Créer un compte SendGrid sur [sendgrid.com](https://sendgrid.com)
+2. Générer une clé API
+3. Vérifier une adresse email expéditeur
+4. Ajouter les credentials dans `.env.local`
+
+## 🚀 Scripts Disponibles
 
 ```bash
-# Development
-npm run dev              # Start development server (port 9002)
-npm run genkit:dev       # Start GenAI development server
-npm run genkit:watch     # Start GenAI with watch mode
+# Développement
+npm run dev              # Serveur développement (port 9002)
 
 # Production
-npm run build            # Build for production
-npm run start            # Start production server
+npm run build            # Build de production
+npm run start            # Serveur de production
 
-# Code Quality
-npm run lint             # Run ESLint
-npm run typecheck        # Run TypeScript type checking
+# Qualité du code
+npm run lint             # Lancer ESLint
+npm run typecheck        # Vérification TypeScript
 ```
 
-## 🎯 Use Cases
+## 🎯 Cas d'Usage
 
-This template is perfect for:
+Ce site est adapté pour :
 
-- **SaaS Applications** - Build subscription-based software
-- **Admin Dashboards** - Create management interfaces
-- **Contact Management** - Handle customer inquiries
-- **Email Marketing** - Send campaigns and newsletters
-- **AI-Powered Apps** - Integrate machine learning features
-- **B2B Platforms** - Build business-to-business solutions
+- **Associations scoutes** - Gestion des unités et ressources
+- **Organisations communautaires** - Communication interne et externe
+- **Groupes pédagogiques** - Partage de ressources éducatives
+- **Communautés locales** - Présentation d'activités et contact
 
-## 🔧 Customization
+## 🔧 Personnalisation
 
-### Adding New Features
+### Ajout de Fonctionnalités
 
-1. **Pages**: Add new routes in `src/app/`
-2. **Components**: Create reusable components in `src/components/`
-3. **API Routes**: Add server actions in `src/actions/`
-4. **Database**: Update Firestore rules and schemas
+1. **Pages** : Ajouter de nouvelles routes dans `src/app/`
+2. **Composants** : Créer des composants réutilisables dans `src/components/`
+3. **Actions** : Ajouter des actions serveur dans `src/actions/`
+4. **Base de données** : Mettre à jour les règles Firestore et schémas
 
 ### Styling
 
-- Modify `tailwind.config.ts` for custom themes
-- Update `src/app/globals.css` for global styles
-- Customize shadcn/ui components in `src/components/ui/`
+- Modifier `tailwind.config.ts` pour des thèmes personnalisés
+- Mettre à jour `src/app/globals.css` pour les styles globaux
+- Personnaliser les composants shadcn/ui dans `src/components/ui/`
 
-### Authentication
+### Authentification
 
-- Modify user roles in Firestore security rules
-- Add new auth providers in Firebase console
-- Customize auth flows in `src/components/auth-form.tsx`
+- Modifier les rôles utilisateur dans les règles de sécurité Firestore
+- Ajouter de nouveaux providers dans la console Firebase
+- Personnaliser les flux d'auth dans `src/components/auth-form.tsx`
 
 ## 📚 Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com/)
-- [SendGrid Documentation](https://docs.sendgrid.com/)
+- [Documentation Next.js](https://nextjs.org/docs)
+- [Documentation Firebase](https://firebase.google.com/docs)
+- [Documentation shadcn/ui](https://ui.shadcn.com/)
+- [Documentation SendGrid](https://docs.sendgrid.com/)
 
-## 🤝 Contributing
+## 📄 Licence
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
 
 ---
 
-**Ready to build your SaaS?** This template provides everything you need to get started quickly. Focus on your business logic while we handle the infrastructure! 🚀
+**Prêt à développer votre site scout ?** Ce template fournit tout ce dont vous avez besoin pour commencer rapidement. Concentrez-vous sur votre mission scoute pendant que nous gérons l'infrastructure ! 🏕️
