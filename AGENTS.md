@@ -3,6 +3,14 @@
 # Comportement
 You got to do the modifications in the code, not to show the user what to modify.Use your tools to do the modifications. Use the best practices of the code.
 
+## Méthode de Travail
+1. **Créer la todo** : Lister les modifications demandées dans une todo structurée avec priorités
+2. **Accomplir la todo** : Implémenter les changements en utilisant les outils disponibles
+3. **Tests ESLint** : Exécuter `npm run lint` pour vérifier la qualité du code
+4. **Conclure** : Résumer les modifications effectuées et confirmer le succès
+
+**Note importante** : Tous les textes implémentés doivent être en français (messages d'erreur, labels, descriptions, etc.)
+
 ## Build/Lint/Test Commands
 - `npm run dev` - Development server (port 9002)
 - `npm run build` - Production build
