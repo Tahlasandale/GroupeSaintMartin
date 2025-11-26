@@ -1,0 +1,41 @@
+[debug] [2025-11-26T10:47:24.790Z] ----------------------------------------------------------------------
+[debug] [2025-11-26T10:47:24.800Z] Command:       /Users/bison/.nvm/versions/node/v20.18.1/bin/node /Users/bison/.nvm/versions/node/v20.18.1/bin/firebase deploy --only firestore:rules.
+[debug] [2025-11-26T10:47:24.801Z] CLI Version:   14.26.0
+[debug] [2025-11-26T10:47:24.801Z] Platform:      darwin
+[debug] [2025-11-26T10:47:24.802Z] Node Version:  v20.18.1
+[debug] [2025-11-26T10:47:24.802Z] Time:          Wed Nov 26 2025 11:47:24 GMT+0100 (Central European Standard Time)
+[debug] [2025-11-26T10:47:24.802Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-26T10:47:25.452Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-26T10:47:25.453Z] > authorizing via signed-in user (mixjojo2006@gmail.com)
+[debug] [2025-11-26T10:47:25.453Z] [iam] checking project groupesaintmartin-e3b75 for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2025-11-26T10:47:25.455Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:25.455Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:25.458Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/groupesaintmartin-e3b75:testIamPermissions [none]
+[debug] [2025-11-26T10:47:25.458Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/groupesaintmartin-e3b75:testIamPermissions x-goog-quota-user=projects/groupesaintmartin-e3b75
+[debug] [2025-11-26T10:47:25.459Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/groupesaintmartin-e3b75:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2025-11-26T10:47:26.723Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/groupesaintmartin-e3b75:testIamPermissions 200
+[debug] [2025-11-26T10:47:26.724Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/groupesaintmartin-e3b75:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'groupesaintmartin-e3b75'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2025-11-26T10:47:26.730Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:26.731Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:26.731Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/groupesaintmartin-e3b75/databases/(default) [none]
+[debug] [2025-11-26T10:47:27.076Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/groupesaintmartin-e3b75/databases/(default) 200
+[debug] [2025-11-26T10:47:27.077Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/groupesaintmartin-e3b75/databases/(default) {"name":"projects/groupesaintmartin-e3b75/databases/(default)","uid":"feb011ae-81a5-48dc-9c9d-90fb7c235f52","createTime":"2025-11-26T10:27:46.985246Z","updateTime":"2025-11-26T10:27:46.985246Z","locationId":"europe-west1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-11-26T10:27:46.985246Z","appEngineIntegrationMode":"DISABLED","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"ILmI5frRj5EDMOL59OrRj5ED"}
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2025-11-26T10:47:27.084Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:27.084Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:27.084Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/groupesaintmartin-e3b75:test [none]
+[debug] [2025-11-26T10:47:27.084Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/groupesaintmartin-e3b75:test [omitted]
+[debug] [2025-11-26T10:47:28.108Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/groupesaintmartin-e3b75:test 200
+[debug] [2025-11-26T10:47:28.109Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/groupesaintmartin-e3b75:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2025-11-26T10:47:28.111Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:28.111Z] Checked if tokens are valid: true, expires at: 1764157140971
+[debug] [2025-11-26T10:47:28.111Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/groupesaintmartin-e3b75/releases pageSize=10&pageToken=

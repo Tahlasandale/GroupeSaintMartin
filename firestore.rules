@@ -1,60 +1,9 @@
-
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // --- Helper Functions ---
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    function isAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-    
-    function isExistingOwner(userId) {
-      return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId));
-    }
-    
-    function isUpdatingOwnProfileSafely(userId) {
-      let isOwner = request.auth.uid == userId;
-      let isNotChangingAdminStatus = !('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin;
-      return isOwner && isNotChangingAdminStatus;
-    }
-
-    // --- Collection Rules ---
-
-    match /users/{userId} {
-      allow get: if isSignedIn();
-      allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId && request.resource.data.isAdmin == false;
-      allow update: if isUpdatingOwnProfileSafely(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
-    }
-
-    match /users/{userId}/dashboards/{dashboardId} {
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == userId;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
-    }
-
-    match /pre-registrations/{preRegistrationId} {
-      allow read, list: if isAdmin();
-      allow create: if true;
-      allow update, delete: if false;
-    }
-
-    match /contact-submissions/{submissionId} {
-      allow read, list: if isAdmin();
-      allow create: if true;
-      allow update: if isAdmin();
-      allow delete: if false;
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
