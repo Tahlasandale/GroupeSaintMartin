@@ -29,8 +29,7 @@ export default function CarnetChantsPage() {
 
   const handleAddChant = () => {
     if (user) {
-      // TODO: Navigate to add chant page
-      console.log('Ajouter un chant');
+      router.push('/carnet-chants/ajouter');
     } else {
       router.push('/login');
     }
