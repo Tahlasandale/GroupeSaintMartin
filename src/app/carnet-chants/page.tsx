@@ -8,10 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { Music, Plus, Search, Edit, Trash2, Check } from 'lucide-react';
+import { Music, Plus, Search, Edit, Trash2, Check, Upload } from 'lucide-react';
 import { AddChantForm } from '@/components/add-chant-form';
+import { CsvUpload } from '@/components/csv-upload';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Chant {
   id: string;
@@ -30,9 +33,21 @@ export default function CarnetChantsPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
+  const [csvData, setCsvData] = useState<Chant[]>([]);
+  const [isImporting, setIsImporting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
+
+  // Admin check
+  const userDocRef = useMemo(() =>
+    user ? doc(firestore, 'users', user.uid) : null,
+    [firestore, user?.uid]
+  );
+  const { data: userData } = useDoc(userDocRef);
+  const isAdmin = userData?.isAdmin === true;
 
   // Get user document to check admin status
   const userDocRef = useMemo(() =>
@@ -54,6 +69,59 @@ export default function CarnetChantsPage() {
     setIsAddModalOpen(false);
     // Refresh the chants list
     fetchChants();
+  };
+
+  const handleCsvDataParsed = (data: Chant[]) => {
+    setCsvData(data);
+  };
+
+  const handleCsvError = (error: string) => {
+    toast({
+      variant: 'destructive',
+      title: 'Erreur CSV',
+      description: error,
+    });
+  };
+
+  const handleImportCsv = async () => {
+    if (csvData.length === 0) return;
+
+    setIsImporting(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const chant of csvData) {
+        try {
+          await addDoc(collection(firestore, 'chants'), {
+            ...chant,
+            createdAt: new Date().toISOString(),
+            validated: false,
+          });
+          successCount++;
+        } catch (error) {
+          console.error('Error adding chant:', error);
+          errorCount++;
+        }
+      }
+
+      toast({
+        title: 'Import terminé',
+        description: `${successCount} chants importés avec succès${errorCount > 0 ? `, ${errorCount} erreurs` : ''}`,
+      });
+
+      setIsCsvModalOpen(false);
+      setCsvData([]);
+      fetchChants();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur d\'import',
+        description: 'Une erreur est survenue lors de l\'import',
+      });
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   const handleValidateChant = async (chantId: string, validated: boolean) => {
@@ -140,23 +208,66 @@ export default function CarnetChantsPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Carnet de Chants</h1>
-          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={handleAddChant}>
-                <Plus className="mr-2 h-4 w-4" />
-                {user ? 'Ajouter un chant' : 'Se connecter pour ajouter'}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Ajouter un chant</DialogTitle>
-                <DialogDescription>
-                  Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.
-                </DialogDescription>
-              </DialogHeader>
-              <AddChantForm onSuccess={handleAddSuccess} />
-            </DialogContent>
-          </Dialog>
+          {user && (
+            <div className="flex gap-2">
+              {isAdmin && (
+                <Dialog open={isCsvModalOpen} onOpenChange={setIsCsvModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Upload className="mr-2 h-4 w-4" />
+                      Importer CSV
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                      <DialogTitle>Importer des chants via CSV</DialogTitle>
+                      <DialogDescription>
+                        Format attendu : titre;paroles;branche;ambiance
+                      </DialogDescription>
+                    </DialogHeader>
+                    {!csvData.length ? (
+                      <CsvUpload onDataParsed={handleCsvDataParsed} onError={handleCsvError} />
+                    ) : (
+                      <div className="space-y-4">
+                        <Alert>
+                          <CheckCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            {csvData.length} chants prêts à être importés
+                          </AlertDescription>
+                        </Alert>
+                        <div className="flex gap-2">
+                          <Button onClick={handleImportCsv} disabled={isImporting}>
+                            {isImporting ? 'Import en cours...' : 'Confirmer l\'import'}
+                          </Button>
+                          <Button variant="outline" onClick={() => setCsvData([])}>
+                            Annuler
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+              )}
+
+              <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={handleAddChant}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Ajouter un chant
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Ajouter un chant</DialogTitle>
+                    <DialogDescription>
+                      Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AddChantForm onSuccess={handleAddSuccess} />
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4 mb-8">

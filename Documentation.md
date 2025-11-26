@@ -91,3 +91,36 @@ Apostolat de la Fraternité Sacerdotale Saint-Pierre de Saint-Martin-de-Bréthen
     Contact
     Politique de cookies
 
+
+
+Build Error
+
+
+Ecmascript file had an error
+./src/app/carnet-chants/page.tsx (58:9)
+
+Ecmascript file had an error
+  56 |   );
+  57 |   const { data: userData } = useDoc(userDocRef);
+> 58 |   const isAdmin = userData?.isAdmin === true;
+     |         ^^^^^^^
+  59 |
+  60 |   const handleAddChant = () => {
+  61 |     if (user) {s
+
+the name `isAdmin` is defined multiple times
+1
+2
+This error occurred during the build process and can only be dismissed by fixing the error.
+
+
+ ✓ Compiled in 13.7s
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 164.4s
+ GET /admin/chants 500 in 175536ms
+ GET /carnet-chants/RVvCTndSTYpxjUWYZqqV 500 in 175793ms
+ GET /admin/chants 500 in 4906ms
+ GET /carnet-chants/RVvCTndSTYpxjUWYZqqV 500 in 10464ms
+ GET /admin/chants 500 in 9441ms
+ GET /carnet-chants/RVvCTndSTYpxjUWYZqqV 500 in 35721ms
+ GET / 500 in 6888ms

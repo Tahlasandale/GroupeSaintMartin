@@ -7,6 +7,8 @@ import type {
   ToastActionElement,
   ToastProps,
 } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+import { Copy } from "lucide-react"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -152,12 +154,30 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
 
+  // Add copy button for error toasts
+  let action: ToastActionElement | undefined
+  if (props.variant === 'destructive' && (props.title || props.description)) {
+    const errorText = [
+      props.title ? String(props.title) : '',
+      props.description ? String(props.description) : ''
+    ].filter(Boolean).join('\n')
+
+    action = React.createElement(Button, {
+      variant: "outline",
+      size: "sm",
+      onClick: () => {
+        navigator.clipboard.writeText(errorText)
+      }
+    }, React.createElement(Copy, { className: "mr-2 h-4 w-4" }), "Copier")
+  }
+
   dispatch({
     type: "ADD_TOAST",
     toast: {
       ...props,
       id,
       open: true,
+      action,
       onOpenChange: (open) => {
         if (!open) dismiss()
       },
