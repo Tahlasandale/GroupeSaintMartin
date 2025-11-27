@@ -100,8 +100,8 @@ export function Navbar() {
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/textes-route" prefetch={false} onClick={handleLinkClick}>
-          Textes route
+        <Link href="/routiers" prefetch={false} onClick={handleLinkClick}>
+          Routiers
         </Link>
       </Button>
       {isAdmin && (
@@ -114,11 +114,6 @@ export function Navbar() {
       <Button variant="link" asChild>
         <Link href="/ressources-chefs" prefetch={false} onClick={handleLinkClick}>
           Ressources chefs
-        </Link>
-      </Button>
-      <Button variant="link" asChild>
-        <Link href="/carte-clan" prefetch={false} onClick={handleLinkClick}>
-          Carte du clan
         </Link>
       </Button>
       <Button variant="ghost" onClick={handleSignOut}>
