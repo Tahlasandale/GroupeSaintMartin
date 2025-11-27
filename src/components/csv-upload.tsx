@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
-interface Chant {
+interface ChantInput {
   titre: string;
   paroles: string;
   branche: string;
@@ -14,7 +14,7 @@ interface Chant {
 }
 
 interface CsvUploadProps {
-  onDataParsed: (data: Chant[]) => void;
+  onDataParsed: (data: ChantInput[]) => void;
   onError: (error: string) => void;
 }
 
@@ -24,7 +24,7 @@ export function CsvUpload({ onDataParsed, onError }: CsvUploadProps) {
   const [fileName, setFileName] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const parseCsv = (csvText: string): Chant[] => {
+  const parseCsv = (csvText: string): ChantInput[] => {
     const lines = csvText.split('\n').filter(line => line.trim());
     if (lines.length < 2) {
       throw new Error('Le fichier CSV doit contenir au moins un en-tête et une ligne de données');
@@ -44,7 +44,7 @@ export function CsvUpload({ onDataParsed, onError }: CsvUploadProps) {
     const brancheIndex = headers.indexOf('branche');
     const ambianceIndex = headers.indexOf('ambiance');
 
-    const chants: Chant[] = [];
+    const chants: ChantInput[] = [];
 
     for (let i = 1; i < lines.length; i++) {
       const values = lines[i].split(';');
@@ -53,7 +53,7 @@ export function CsvUpload({ onDataParsed, onError }: CsvUploadProps) {
         throw new Error(`Ligne ${i + 1} : nombre de colonnes insuffisant`);
       }
 
-      const chant: Chant = {
+      const chant: ChantInput = {
         titre: values[titleIndex]?.trim() || '',
         paroles: values[parolesIndex]?.trim().replace(/\\n/g, '\n') || '',
         branche: values[brancheIndex]?.trim() || '',

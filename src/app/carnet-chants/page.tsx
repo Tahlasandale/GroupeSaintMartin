@@ -25,6 +25,13 @@ interface Chant {
   validated?: boolean;
 }
 
+interface ChantInput {
+  titre: string;
+  paroles: string;
+  branche: string;
+  ambiance: string;
+}
+
 export default function CarnetChantsPage() {
   const [chants, setChants] = useState<Chant[]>([]);
   const [filteredChants, setFilteredChants] = useState<Chant[]>([]);
@@ -34,7 +41,7 @@ export default function CarnetChantsPage() {
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
-  const [csvData, setCsvData] = useState<Chant[]>([]);
+  const [csvData, setCsvData] = useState<ChantInput[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
@@ -63,7 +70,7 @@ export default function CarnetChantsPage() {
     fetchChants();
   };
 
-  const handleCsvDataParsed = (data: Chant[]) => {
+  const handleCsvDataParsed = (data: ChantInput[]) => {
     setCsvData(data);
   };
 
@@ -203,7 +210,7 @@ export default function CarnetChantsPage() {
           {user && (
             <div className="flex gap-2">
               <Button asChild variant="outline">
-                <a href="/carnet de chants.pdf" download="carnet-de-chants.pdf">
+                <a href="/Ensemble des chants scouts.pdf" download="ensemble-des-chants-scouts.pdf">
                   <Download className="mr-2 h-4 w-4" />
                   Télécharger ancien carnet de chants
                 </a>
