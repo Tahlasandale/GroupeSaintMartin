@@ -205,10 +205,10 @@ export default function CarnetChantsPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row md:justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Carnet de Chants</h1>
           {user && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 mt-4 md:mt-0 justify-center md:justify-start">
               <Button asChild variant="outline">
                 <a href="/Ensemble des chants scouts.pdf" download="ensemble-des-chants-scouts.pdf">
                   <Download className="mr-2 h-4 w-4" />
