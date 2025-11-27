@@ -1,10 +1,5 @@
 titre;paroles;branche;ambiance
-Au clair de la lune;Au clair de la lune
-Mon beau sapin qu'il a de branches
-Mon beau sapin qu'il a de branches;LL;veillée
-Frère Jacques;Frère Jacques, dormez-vous ?
-Sonnez les matines, sonnez les matines
-Ding dang dong, ding dang dong;SG;marche
-Dans la forêt lointaine;Dans la forêt lointaine
-On entend le coucou
-On entend le coucou;RGA;prière
+Au clair de la lune;Au clair de la lune;LL;veillée
+Mon beau sapin;Mon beau sapin qu'il a de branches;SG;marche
+Frère Jacques;Frère Jacques, dormez-vous ? Sonnez les matines, ding dang dong;RGA;prière
+Dans la forêt lointaine;Dans la forêt lointaine, on entend le coucou;LL;veillée
