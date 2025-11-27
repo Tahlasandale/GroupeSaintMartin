@@ -176,8 +176,10 @@ export default function CarnetChantsPage() {
 
     // Apply search filter
     if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(chant =>
-        chant.titre.toLowerCase().includes(searchQuery.toLowerCase())
+        chant.titre.toLowerCase().includes(query) ||
+        chant.paroles.toLowerCase().includes(query)
       );
     }
 
