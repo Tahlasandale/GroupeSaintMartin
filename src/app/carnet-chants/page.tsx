@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useFirestore, useUser } from '@/firebase';
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { Music, Plus, Search, Edit, Trash2, Check, Upload } from 'lucide-react';
+import { Music, Plus, Search, Edit, Trash2, Check, Upload, Download } from 'lucide-react';
 import { AddChantForm } from '@/components/add-chant-form';
 import { CsvUpload } from '@/components/csv-upload';
 import { useToast } from '@/hooks/use-toast';
@@ -202,6 +202,12 @@ export default function CarnetChantsPage() {
           <h1 className="text-4xl font-bold">Carnet de Chants</h1>
           {user && (
             <div className="flex gap-2">
+              <Button asChild variant="outline">
+                <a href="/carnet de chants.pdf" download="carnet-de-chants.pdf">
+                  <Download className="mr-2 h-4 w-4" />
+                  Télécharger ancien carnet de chants
+                </a>
+              </Button>
               {isAdmin && (
                 <Dialog open={isCsvModalOpen} onOpenChange={setIsCsvModalOpen}>
                   <DialogTrigger asChild>
