@@ -49,14 +49,6 @@ export default function CarnetChantsPage() {
   const { data: userData } = useDoc(userDocRef);
   const isAdmin = userData?.isAdmin === true;
 
-  // Get user document to check admin status
-  const userDocRef = useMemo(() =>
-    user ? doc(firestore, 'users', user.uid) : null,
-    [firestore, user?.uid]
-  );
-  const { data: userData } = useDoc(userDocRef);
-  const isAdmin = userData?.isAdmin === true;
-
   const handleAddChant = () => {
     if (user) {
       setIsAddModalOpen(true);
@@ -229,9 +221,9 @@ export default function CarnetChantsPage() {
                       <CsvUpload onDataParsed={handleCsvDataParsed} onError={handleCsvError} />
                     ) : (
                       <div className="space-y-4">
-                        <Alert>
-                          <CheckCircle className="h-4 w-4" />
-                          <AlertDescription>
+                         <Alert>
+                           <Check className="h-4 w-4" />
+                           <AlertDescription>
                             {csvData.length} chants prêts à être importés
                           </AlertDescription>
                         </Alert>
