@@ -150,6 +150,31 @@ export default function CarnetChantsPage() {
     console.log('Edit chant:', chantId);
   };
 
+  const handleDeleteAllChants = async () => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer tous les chants ? Cette action est irréversible.')) return;
+
+    try {
+      const chantsRef = collection(firestore, 'chants');
+      const snapshot = await getDocs(chantsRef);
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      toast({
+        title: 'Suppression réussie',
+        description: `${snapshot.docs.length} chants supprimés.`,
+      });
+
+      fetchChants();
+    } catch (error) {
+      console.error('Error deleting all chants:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Erreur lors de la suppression des chants.',
+      });
+    }
+  };
+
   const fetchChants = async () => {
     try {
       const chantsRef = collection(firestore, 'chants');
@@ -256,24 +281,29 @@ export default function CarnetChantsPage() {
                 </Dialog>
               )}
 
-              <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={handleAddChant}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Ajouter un chant
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Ajouter un chant</DialogTitle>
-                    <DialogDescription>
-                      Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <AddChantForm onSuccess={handleAddSuccess} />
-                </DialogContent>
-              </Dialog>
-            </div>
+               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                 <DialogTrigger asChild>
+                   <Button onClick={handleAddChant}>
+                     <Plus className="mr-2 h-4 w-4" />
+                     Ajouter un chant
+                   </Button>
+                 </DialogTrigger>
+                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                   <DialogHeader>
+                     <DialogTitle>Ajouter un chant</DialogTitle>
+                     <DialogDescription>
+                       Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.
+                     </DialogDescription>
+                   </DialogHeader>
+                   <AddChantForm onSuccess={handleAddSuccess} />
+                 </DialogContent>
+               </Dialog>
+
+               <Button variant="destructive" onClick={handleDeleteAllChants}>
+                 <Trash2 className="mr-2 h-4 w-4" />
+                 Supprimer tous les chants
+               </Button>
+             </div>
           )}
         </div>
 
