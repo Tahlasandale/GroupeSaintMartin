@@ -71,7 +71,11 @@ export default function CarnetChantsPage() {
   };
 
   const handleCsvDataParsed = (data: ChantInput[]) => {
-    setCsvData(data);
+    const processedData = data.map(chant => ({
+      ...chant,
+      paroles: chant.paroles.replace(/\/jump\//g, '\n')
+    }));
+    setCsvData(processedData);
   };
 
   const handleCsvError = (error: string) => {
@@ -254,7 +258,8 @@ export default function CarnetChantsPage() {
                     <DialogHeader>
                       <DialogTitle>Importer des chants via CSV</DialogTitle>
                       <DialogDescription>
-                        Format attendu : titre;paroles;branche;ambiance
+                        Format attendu : titre;paroles;branche;ambiance<br />
+                        Utilisez /jump/ pour les sauts de ligne dans les paroles.
                       </DialogDescription>
                     </DialogHeader>
                     {!csvData.length ? (
