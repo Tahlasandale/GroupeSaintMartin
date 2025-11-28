@@ -43,6 +43,7 @@ export default function CarnetChantsPage() {
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [csvData, setCsvData] = useState<ChantInput[]>([]);
   const [isImporting, setIsImporting] = useState(false);
+  const [editingChant, setEditingChant] = useState<Chant | null>(null);
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function CarnetChantsPage() {
 
   const handleAddChant = () => {
     if (user) {
+      setEditingChant(null);
       setIsAddModalOpen(true);
     } else {
       router.push('/login');
@@ -66,6 +68,7 @@ export default function CarnetChantsPage() {
 
   const handleAddSuccess = () => {
     setIsAddModalOpen(false);
+    setEditingChant(null);
     // Refresh the chants list
     fetchChants();
   };
@@ -150,8 +153,11 @@ export default function CarnetChantsPage() {
   };
 
   const handleEditChant = (chantId: string) => {
-    // TODO: Implement edit functionality
-    console.log('Edit chant:', chantId);
+    const chant = chants.find(c => c.id === chantId);
+    if (chant) {
+      setEditingChant(chant);
+      setIsAddModalOpen(true);
+    }
   };
 
   const handleDeleteAllChants = async () => {
@@ -293,15 +299,24 @@ export default function CarnetChantsPage() {
                      Ajouter un chant
                    </Button>
                  </DialogTrigger>
-                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-                   <DialogHeader>
-                     <DialogTitle>Ajouter un chant</DialogTitle>
-                     <DialogDescription>
-                       Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.
-                     </DialogDescription>
-                   </DialogHeader>
-                   <AddChantForm onSuccess={handleAddSuccess} />
-                 </DialogContent>
+                  <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>{editingChant ? 'Modifier un chant' : 'Ajouter un chant'}</DialogTitle>
+                      <DialogDescription>
+                        {editingChant ? 'Modifiez les informations du chant.' : 'Ajoutez un nouveau chant au Carnet de Chants. Tous les champs sont obligatoires.'}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <AddChantForm
+                      onSuccess={handleAddSuccess}
+                      initialValues={editingChant ? {
+                        titre: editingChant.titre,
+                        paroles: editingChant.paroles,
+                        branche: editingChant.branche,
+                        ambiance: editingChant.ambiance,
+                      } : undefined}
+                      chantId={editingChant?.id}
+                    />
+                  </DialogContent>
                </Dialog>
 
                <Button variant="destructive" onClick={handleDeleteAllChants}>

@@ -26,7 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useFirestore, useUser } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { collection } from 'firebase/firestore';
+import { collection, doc, updateDoc } from 'firebase/firestore';
 
 const chantSchema = z.object({
   titre: z.string().min(3, { message: 'Le titre doit contenir au moins 3 caractères.' }),
@@ -39,9 +39,11 @@ type ChantFormValues = z.infer<typeof chantSchema>;
 
 interface AddChantFormProps {
   onSuccess?: () => void;
+  initialValues?: Partial<ChantFormValues>;
+  chantId?: string;
 }
 
-export function AddChantForm({ onSuccess }: AddChantFormProps) {
+export function AddChantForm({ onSuccess, initialValues, chantId }: AddChantFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
@@ -50,10 +52,10 @@ export function AddChantForm({ onSuccess }: AddChantFormProps) {
   const form = useForm<ChantFormValues>({
     resolver: zodResolver(chantSchema),
     defaultValues: {
-      titre: '',
-      paroles: '',
-      branche: 'LL',
-      ambiance: 'veillée',
+      titre: initialValues?.titre || '',
+      paroles: initialValues?.paroles || '',
+      branche: initialValues?.branche || 'LL',
+      ambiance: initialValues?.ambiance || 'veillée',
     },
   });
 
@@ -61,27 +63,40 @@ export function AddChantForm({ onSuccess }: AddChantFormProps) {
     setIsLoading(true);
 
     try {
-      const chantsRef = collection(firestore, 'chants');
-      await addDocumentNonBlocking(chantsRef, {
-        ...values,
-        createdAt: new Date().toISOString(),
-        createdBy: user?.uid,
-        validated: false,
-      });
+      if (chantId) {
+        // Edit mode
+        const chantRef = doc(firestore, 'chants', chantId);
+        await updateDoc(chantRef, values);
 
-      toast({
-        title: 'Chant ajouté !',
-        description: 'Le chant a été ajouté au Carnet avec succès.',
-      });
+        toast({
+          title: 'Chant modifié !',
+          description: 'Le chant a été modifié avec succès.',
+        });
+      } else {
+        // Add mode
+        const chantsRef = collection(firestore, 'chants');
+        await addDocumentNonBlocking(chantsRef, {
+          ...values,
+          createdAt: new Date().toISOString(),
+          createdBy: user?.uid,
+          validated: false,
+        });
 
-      form.reset();
+        toast({
+          title: 'Chant ajouté !',
+          description: 'Le chant a été ajouté au Carnet avec succès.',
+        });
+
+        form.reset();
+      }
+
       onSuccess?.();
     } catch (error) {
-      console.error('Error adding chant:', error);
+      console.error('Error saving chant:', error);
       toast({
         variant: 'destructive',
         title: 'Erreur',
-        description: 'Impossible d\'ajouter le chant. Veuillez réessayer.',
+        description: 'Impossible de sauvegarder le chant. Veuillez réessayer.',
       });
     } finally {
       setIsLoading(false);
@@ -173,7 +188,7 @@ export function AddChantForm({ onSuccess }: AddChantFormProps) {
 
         <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Ajouter le chant
+          {chantId ? 'Modifier le chant' : 'Ajouter le chant'}
         </Button>
       </form>
     </Form>
