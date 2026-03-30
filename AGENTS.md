@@ -23,10 +23,13 @@ You got to do the modifications in the code, not to show the user what to modify
 - `.windsurf/workflows/giiit.md` - Auto-commit workflow
 
 ## Development Setup
-1. `npm install`
-2. Copy `.env.local.example` to `.env.local`
-3. `npm run dev`
-4. For AI: `npm run genkit:dev`
+1. Set Node path: `export PATH="/Users/bison/.nvm/versions/node/v20.19.0/bin:$PATH"`
+2. `npm install` (or `pnpm install`)
+3. Copy `.env.local.example` to `.env.local`
+4. `npm run dev`
+5. For AI: `npm run genkit:dev`
+
+**Note**: Node.js est installé via nvm. Le chemin vers node doit être ajouté au PATH pour exécuter les commandes npm/pnpm.
 
 ## Code Style Guidelines
 - **TypeScript**: Strict mode, explicit types, interfaces over types
