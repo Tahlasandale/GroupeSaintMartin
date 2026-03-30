@@ -3,18 +3,18 @@
 import { AuthForm } from '@/components/auth-form';
 import { useUser } from '@/firebase';
 import { Leaf } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
   const { user, isUserLoading } = useUser();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && !isUserLoading) {
-      router.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, navigate]);
 
   if (isUserLoading || user) {
     return (

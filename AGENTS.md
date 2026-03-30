@@ -12,7 +12,7 @@ You got to do the modifications in the code, not to show the user what to modify
 **Note importante** : Tous les textes implémentés doivent être en français (messages d'erreur, labels, descriptions, etc.)
 
 ## Build/Lint/Test Commands
-- `npm run dev` - Development server (port 9002)
+- `npm run dev` - Development server (NEVER RUN THIS COMMAND EXEPT IF ESPECIALLY ASKED)
 - `npm run build` - Production build
 - `npm run lint` - ESLint
 - `npm run typecheck` - TypeScript check

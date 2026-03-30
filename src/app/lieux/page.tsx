@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useUser } from '@/firebase';
@@ -22,14 +22,14 @@ export default function LieuxPage() {
   const [loading, setLoading] = useState(true);
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push('/login');
+      navigate('/login');
       return;
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, navigate]);
 
   if (isUserLoading) {
     return (

@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { ContactForm } from '../contact-form';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '../ui/button';
@@ -36,23 +36,20 @@ export function Footer() {
               </DialogContent>
             </Dialog>
             <Link
-              href="/mentions-legales"
+              to="/mentions-legales"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              prefetch={false}
             >
               Mentions légales
             </Link>
             <Link
-              href="/politique-de-confidentialite"
+              to="/politique-de-confidentialite"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              prefetch={false}
             >
               Politique de confidentialité
             </Link>
             <Link
-              href="#"
+              to="#"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              prefetch={false}
             >
               Charte du site
             </Link>
@@ -61,7 +58,7 @@ export function Footer() {
           <div className="text-center md:text-right">
             <p className="text-sm text-muted-foreground mb-2">Suivez-nous</p>
             <div className="flex justify-center md:justify-end gap-4">
-              <Link href="https://www.instagram.com/grp_st_martin_brethencourt/" className="text-muted-foreground hover:text-foreground">
+              <Link to="https://www.instagram.com/grp_st_martin_brethencourt/" className="text-muted-foreground hover:text-foreground" target="_blank" rel="noopener noreferrer">
                 📷 Instagram
               </Link>
             </div>

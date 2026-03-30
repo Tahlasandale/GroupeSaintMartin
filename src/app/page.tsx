@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -80,7 +80,7 @@ export default function Home() {
         {/* Bouton Nous contacter */}
         <div className="text-center">
           <Button asChild size="lg">
-            <Link href="/contacts">
+            <Link to="/contacts">
               Nous contacter
             </Link>
           </Button>

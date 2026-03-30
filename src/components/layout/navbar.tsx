@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, LogOut, Menu, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth, useUser, useFirestore } from '@/firebase';
@@ -8,29 +8,23 @@ import { signOut } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
+import { useRole } from '@/hooks/use-role';
+import type { UserRole } from '@/types/roles';
 
 export function Navbar() {
   const { user } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  // Get user document to check admin status
-  const userDocRef = useMemo(() =>
-    user ? doc(firestore, 'users', user.uid) : null,
-    [firestore, user?.uid]
-  );
-  const { data: userData } = useDoc(userDocRef);
-  const isAdmin = userData?.isAdmin === true;
+  const { role, isAdmin } = useRole();
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push('/');
+      navigate('/');
     } catch (error) {
       console.error('Error signing out: ', error);
     } finally {
@@ -42,35 +36,41 @@ export function Navbar() {
     setIsSheetOpen(false);
   };
 
+  const canAccess = (requiredRoles: UserRole[]): boolean => {
+    if (!role) return false;
+    if (role === 'admin') return true;
+    return requiredRoles.includes(role);
+  };
+
   const publicNavLinks = (
     <>
       <Button variant="link" asChild>
-        <Link href="/qui-sommes-nous" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/qui-sommes-nous" onClick={handleLinkClick}>
           Qui sommes-nous
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/le-scoutisme-a-saint-martin" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/le-scoutisme-a-saint-martin" onClick={handleLinkClick}>
           Le scoutisme à Saint-Martin
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/activites" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/activites" onClick={handleLinkClick}>
           Activités
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/carnet-chants" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/carnet-chants" onClick={handleLinkClick}>
           Carnet de chants
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/contacts" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/contacts" onClick={handleLinkClick}>
           Contacts
         </Link>
       </Button>
       <Button asChild variant="outline">
-        <Link href="/login" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/login" onClick={handleLinkClick}>
           Se connecter
         </Link>
       </Button>
@@ -80,42 +80,67 @@ export function Navbar() {
   const authNavLinks = (
     <>
       <Button variant="link" asChild>
-        <Link href="/dashboard" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/dashboard" onClick={handleLinkClick}>
           Dashboard
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/lieux" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/lieux" onClick={handleLinkClick}>
           Lieux
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/carnet-chants" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/carnet-chants" onClick={handleLinkClick}>
           Carnet de chants
         </Link>
       </Button>
       <Button variant="link" asChild>
-        <Link href="/jeux-veillee" prefetch={false} onClick={handleLinkClick}>
+        <Link to="/jeux-veillee" onClick={handleLinkClick}>
           Jeux de veillée
         </Link>
       </Button>
-      <Button variant="link" asChild>
-        <Link href="/routiers" prefetch={false} onClick={handleLinkClick}>
-          Routiers
-        </Link>
-      </Button>
+      {canAccess(['aine', 'chef_louveteaux', 'cheftaine_louvettes', 'chef_scouts', 'cheftaine_guides', 'admin']) && (
+        <Button variant="link" asChild>
+          <Link to="/routiers" onClick={handleLinkClick}>
+            Routiers
+          </Link>
+        </Button>
+      )}
       {isAdmin && (
         <Button variant="link" asChild>
-          <Link href="/osl" prefetch={false} onClick={handleLinkClick}>
+          <Link to="/osl" onClick={handleLinkClick}>
             OSL
           </Link>
         </Button>
       )}
-      <Button variant="link" asChild>
-        <Link href="/ressources-chefs" prefetch={false} onClick={handleLinkClick}>
-          Ressources chefs
-        </Link>
-      </Button>
+      {canAccess(['chef_louveteaux', 'admin']) && (
+        <Button variant="link" asChild>
+          <Link to="/ressources-louveteaux" onClick={handleLinkClick}>
+            Ressources LL
+          </Link>
+        </Button>
+      )}
+      {canAccess(['cheftaine_louvettes', 'admin']) && (
+        <Button variant="link" asChild>
+          <Link to="/ressources-louvettes" onClick={handleLinkClick}>
+            Ressources Louvettes
+          </Link>
+        </Button>
+      )}
+      {canAccess(['chef_scouts', 'admin']) && (
+        <Button variant="link" asChild>
+          <Link to="/ressources-scouts" onClick={handleLinkClick}>
+            Ressources SG
+          </Link>
+        </Button>
+      )}
+      {canAccess(['cheftaine_guides', 'admin']) && (
+        <Button variant="link" asChild>
+          <Link to="/ressources-guides" onClick={handleLinkClick}>
+            Ressources Guides
+          </Link>
+        </Button>
+      )}
       <Button variant="ghost" onClick={handleSignOut}>
         <LogOut className="mr-2 h-4 w-4" />
         Se déconnecter
@@ -127,7 +152,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6 h-14 flex items-center">
-      <Link href="/" className="flex items-center justify-center mr-auto" prefetch={false}>
+      <Link to="/" className="flex items-center justify-center mr-auto">
         <img src="/favicon.png" alt="Groupe Saint Martin" className="h-8 w-8 mr-2" />
         <span className="text-lg font-bold text-primary font-headline">Groupe Saint Martin</span>
       </Link>
@@ -152,7 +177,7 @@ export function Navbar() {
             </SheetHeader>
             <nav className="flex flex-col gap-4 mt-8">
               <Button variant="link" asChild>
-                <Link href="/" prefetch={false} onClick={handleLinkClick} className="flex items-center justify-start">
+                <Link to="/" onClick={handleLinkClick} className="flex items-center justify-start">
                   <Home className="mr-2 h-4 w-4" />
                   Home
                 </Link>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUser, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -10,7 +10,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 export default function OSLPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   // Get user document to check admin status
   const userDocRef = useMemo(() =>
@@ -22,9 +22,9 @@ export default function OSLPage() {
 
   useEffect(() => {
     if (!isUserLoading && (!user || !isAdmin)) {
-      router.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [user, isAdmin, isUserLoading, router]);
+  }, [user, isAdmin, isUserLoading, navigate]);
 
   if (isUserLoading) {
     return (

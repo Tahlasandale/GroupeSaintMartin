@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +22,7 @@ export default function ChantDetailPage() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const firestore = useFirestore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchChant = async () => {
@@ -38,19 +38,18 @@ export default function ChantDetailPage() {
             ...chantSnap.data()
           } as Chant);
         } else {
-          // Chant not found, redirect to main page
-          router.push('/carnet-chants');
+          navigate('/carnet-chants');
         }
       } catch (error) {
         console.error('Error fetching chant:', error);
-        router.push('/carnet-chants');
+        navigate('/carnet-chants');
       } finally {
         setLoading(false);
       }
     };
 
     fetchChant();
-  }, [id, firestore, router]);
+  }, [id, firestore, navigate]);
 
   if (loading) {
     return (
@@ -73,7 +72,7 @@ export default function ChantDetailPage() {
       <div className="max-w-4xl mx-auto">
         <Button
           variant="ghost"
-          onClick={() => router.push('/carnet-chants')}
+          onClick={() => navigate('/carnet-chants')}
           className="mb-6"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />

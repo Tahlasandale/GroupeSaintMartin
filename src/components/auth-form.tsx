@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -61,13 +61,13 @@ export function AuthForm() {
   const { toast } = useToast();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && !isUserLoading) {
-      router.push('/dashboard');
+      navigate('/dashboard');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, navigate]);
 
   const form = useForm({
     resolver: zodResolver(formType === 'login' ? loginSchema : signupSchema),

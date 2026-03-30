@@ -72,7 +72,8 @@ const createUserDocumentIfNeeded = async (firestore: Firestore, user: User) => {
       name: user.displayName,
       signUpDate: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
-      isAdmin: false, // Default isAdmin to false
+      isAdmin: false,
+      role: 'scout',
     };
     if (googleId) {
       newUser.googleId = googleId;

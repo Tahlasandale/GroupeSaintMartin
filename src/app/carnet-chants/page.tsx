@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,8 +46,8 @@ export default function CarnetChantsPage() {
   const [editingChant, setEditingChant] = useState<Chant | null>(null);
   const { user } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Admin check
   const userDocRef = useMemo(() =>
@@ -62,7 +62,7 @@ export default function CarnetChantsPage() {
       setEditingChant(null);
       setIsAddModalOpen(true);
     } else {
-      router.push('/login');
+      navigate('/login');
     }
   };
 
@@ -377,7 +377,7 @@ export default function CarnetChantsPage() {
               <div
                 key={chant.id}
                 className="group flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors relative"
-                onClick={() => router.push(`/carnet-chants/${chant.id}`)}
+                onClick={() => navigate(`/carnet-chants/${chant.id}`)}
               >
                 <div className="flex items-center space-x-3">
                   <Music className="h-5 w-5 text-primary" />

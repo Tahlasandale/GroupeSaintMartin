@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
 import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -40,7 +40,7 @@ type FilterValue = 'all' | 'unread' | 'read_unprocessed' | 'processed';
 
 export default function AdminContactsPage() {
   const { user, isUserLoading } = useUser();
-  const router = useRouter();
+  const navigate = useNavigate();
   const firestore = useFirestore();
   const [filter, setFilter] = useState<FilterValue>('all');
 
@@ -78,15 +78,15 @@ export default function AdminContactsPage() {
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push('/login');
+      navigate('/login');
     }
 
     if (!isUserDataLoading && userData) {
        if (!(userData as any).isAdmin) {
-         router.push('/dashboard');
+         navigate('/dashboard');
        }
     }
-  }, [user, isUserLoading, userData, isUserDataLoading, router]);
+  }, [user, isUserLoading, userData, isUserDataLoading, navigate]);
 
   const handleStatusChange = (submissionId: string, field: 'read' | 'processed', value: boolean) => {
     if (!firestore) return;
@@ -110,7 +110,7 @@ export default function AdminContactsPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
         <Button asChild variant="outline" className="mb-4">
-          <Link href="/admin/dashboard">
+          <Link to="/admin/dashboard">
             &larr; Back to dashboard
           </Link>
         </Button>

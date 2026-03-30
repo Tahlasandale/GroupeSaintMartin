@@ -1,16 +1,16 @@
 'use client';
 
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Leaf, Shield, Music, Users } from 'lucide-react';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 export default function AdminDashboardPage() {
   const { user, isUserLoading } = useUser();
-  const router = useRouter();
+  const navigate = useNavigate();
   const firestore = useFirestore();
 
   const userDocRef = useMemoFirebase(
@@ -21,15 +21,15 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push('/login');
+      navigate('/login');
     }
 
     if (!isUserDataLoading && userData) {
       if (!(userData as any).isAdmin) {
-        router.push('/dashboard');
+        navigate('/dashboard');
       }
     }
-  }, [user, isUserLoading, userData, isUserDataLoading, router]);
+  }, [user, isUserLoading, userData, isUserDataLoading, navigate]);
 
   if (isUserLoading || isUserDataLoading || !userData || !(userData as any).isAdmin) {
     return (
@@ -51,13 +51,13 @@ export default function AdminDashboardPage() {
         </p>
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Button asChild>
-            <Link href="/admin/contacts">
+            <Link to="/admin/contacts">
               <Users className="mr-2 h-4 w-4" />
               Voir les Contacts
             </Link>
           </Button>
           <Button asChild>
-            <Link href="/carnet-chants">
+            <Link to="/carnet-chants">
               <Music className="mr-2 h-4 w-4" />
               Gérer les Chants
             </Link>

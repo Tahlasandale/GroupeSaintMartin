@@ -25,7 +25,53 @@ npm run dev
 ### 🔐 Politique d'Accès
 - **Login Wall** : Seules les pages vitrines sont publiques
 - **Authentification obligatoire** pour l'accès aux ressources internes
-- **Gestion des rôles** : Utilisateurs standards et administrateurs
+- **Gestion des rôles** : Système de rôles avec accès par branche
+
+### 👥 Rôles et Accès
+
+| Rôle | Description | Accès |
+|------|-------------|-------|
+| **scout** | Membre (8-17 ans) | Site public, carnet chants, lieux |
+| **aine** | Aîné (17-22 ans) | + Page Routiers |
+| **chef_louveteaux** | Animateur LL (garçons) | + Ressources Louveteaux |
+| **cheftaine_louvettes** | Animateur LL (filles) | + Ressources Louvettes |
+| **chef_scouts** | Animateur SG/RGA (garçons) | + Ressources Scouts |
+| **cheftaine_guides** | Animateur GA (filles) | + Ressources Guides |
+| **admin** | Administrateur | TOUT |
+
+#### Matrice des accès
+
+| Contenu | scout | aine | chef_louveteaux | cheftaine_louvettes | chef_scouts | cheftaine_guides | admin |
+|---------|-------|------|-----------------|---------------------|-------------|------------------|-------|
+| Site normal | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Carnet chants | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Lieux | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Routiers | - | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Ressources LL | - | - | ✓ | ✓ | - | - | ✓ |
+| Ressources SG | - | - | - | - | ✓ | - | ✓ |
+| Ressources Guides | - | - | - | - | - | ✓ | ✓ |
+| OSL | - | - | - | - | - | - | ✓ |
+| Admin | - | - | - | - | - | - | ✓ |
+
+> **Note** : Le rôle par défaut lors de la création d'un compte est `scout`.
+
+### 📁 Structure Firestore
+
+#### Collection `users`
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `id` | string | UID Firebase Auth |
+| `email` | string | Email de l'utilisateur |
+| `name` | string | Nom affiché |
+| `role` | string | Rôle de l'utilisateur (`scout`, `aine`, `chef_louveteaux`, `cheftaine_louvettes`, `chef_scouts`, `cheftaine_guides`, `admin`) |
+| `isAdmin` | boolean | Legacy (utilisé pour compatibilité) |
+| `signUpDate` | timestamp | Date de création du compte |
+| `lastLogin` | timestamp | Dernière connexion |
+
+#### Attribuer un rôle
+
+Pour modifier le rôle d'un utilisateur, aller dans la console Firebase Firestore et modifier le champ `role` du document utilisateur.
 
 ### 🌐 Site Vitrine (Public)
 - **Page d'accueil** - Présentation du groupe avec bannière, unités, actualités
@@ -51,7 +97,9 @@ npm run dev
 ## 🛠 Pile Technologique
 
 ### Framework Core
-- **[Next.js 15](https://nextjs.org/)** - Framework React avec App Router
+- **[Vite](https://vitejs.dev/)** - Build tool ultra-rapide
+- **[Preact](https://preactjs.com/)** - Alternative légère à React (3KB)
+- **[React Router v6](https://reactrouter.com/)** - Routing côté client
 - **[TypeScript](https://www.typescriptlang.org/)** - JavaScript typé
 - **[Firebase](https://firebase.google.com/)** - Backend as a Service
 
@@ -74,7 +122,7 @@ npm run dev
 
 ```
 src/
-├── app/                          # Pages Next.js App Router
+├── app/                          # Pages de l'application (SPA)
 │   ├── admin/                    # Pages admin (contacts, dashboard, emails)
 │   ├── contacts/                 # Page contacts publique
 │   ├── activites/                # Page activités publique
@@ -194,7 +242,7 @@ Ce site est adapté pour :
 
 ## 📚 Documentation
 
-- [Documentation Next.js](https://nextjs.org/docs)
+- [Documentation Vite](https://vitejs.dev/guide)
 - [Documentation Firebase](https://firebase.google.com/docs)
 - [Documentation shadcn/ui](https://ui.shadcn.com/)
 
