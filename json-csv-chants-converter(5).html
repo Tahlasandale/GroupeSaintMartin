@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON → CSV Chants Converter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 1.3em;
+      color: #667eea;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .preview {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 400px;
+      overflow: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .example {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📄 JSON → CSV Chants Converter</h1>
+      <p>Séparation intelligente multi-chants par page avec Gemini AI</p>
+    </header>
+
+    <div class="content">
+      <!-- Status Messages -->
+      <div id="status" class="status"></div>
+
+      <!-- API Key Section -->
+      <div class="section">
+        <div class="section-title">🔑 Clé API Gemini</div>
+        <label for="apiKey">
+          Votre clé API Gemini Pro
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea; margin-left: 10px;">
+            (Obtenir une clé)
+          </a>
+        </label>
+        <input type="password" id="apiKey" placeholder="AIza...">
+      </div>
+
+      <!-- JSON Input Section -->
+      <div class="section">
+        <div class="section-title">📥 JSON d'entrée (multi-pages, multi-chants)</div>
+        <label for="jsonInput">Collez votre JSON ici :</label>
+        <textarea id="jsonInput" placeholder='[
+  {
+    "titre": "Page 1",
+    "paroles": "Adieu Madras\n\n1-Adieu madras...\n2-Bonjour Missié...",
+    "branche": "SG",
+    "ambiance": "veillée"
+  }
+]'></textarea>
+        <div class="example">
+          <strong>Format attendu :</strong> Un tableau JSON où chaque élément représente une page contenant potentiellement plusieurs chants dans le champ "paroles".<br><br>
+          <strong>📌 Important :</strong> Les sauts de ligne dans les paroles seront représentés par la balise <code>/jump/</code> dans le CSV final.<br>
+          <strong>Exemple :</strong> "Vers 1/jump/Vers 2/jump//jump/Couplet 2"
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group">
+        <button class="btn-primary" id="convertBtn">🔄 Analyser et Convertir</button>
+        <button class="btn-secondary" id="downloadBtn" disabled>⬇️ Télécharger CSV</button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyse en cours avec Gemini AI...</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats" id="stats" style="display: none;">
+        <div class="stat-card">
+          <div class="stat-value" id="pagesCount">0</div>
+          <div class="stat-label">Pages traitées</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="chantsCount">0</div>
+          <div class="stat-label">Chants extraits</div>
+        </div>
+      </div>
+
+      <!-- CSV Preview -->
+      <div class="section" id="previewSection" style="display: none;">
+        <div class="section-title">👁️ Aperçu CSV</div>
+        <div class="preview" id="csvPreview"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Debug logging
+    const DEBUG = true;
+    function log(message, data = null) {
+      if (DEBUG) {
+        console.log(`[DEBUG] ${message}`, data || '');
+      }
+    }
+
+    // Data Models
+    const state = {
+      pageItems: [],
+      chantItems: [],
+      csvContent: '',
+      apiKey: ''
+    };
+
+    // DOM Elements
+    const apiKeyInput = document.getElementById('apiKey');
+    const jsonInput = document.getElementById('jsonInput');
+    const convertBtn = document.getElementById('convertBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusDiv = document.getElementById('status');
+    const loadingDiv = document.getElementById('loading');
+    const statsDiv = document.getElementById('stats');
+    const previewSection = document.getElementById('previewSection');
+    const csvPreview = document.getElementById('csvPreview');
+    const pagesCount = document.getElementById('pagesCount');
+    const chantsCount = document.getElementById('chantsCount');
+
+    // Load API key from localStorage
+    const savedKey = localStorage.getItem('geminiApiKey');
+    if (savedKey) {
+      apiKeyInput.value = savedKey;
+      log('API key loaded from localStorage');
+    }
+
+    // Save API key on change
+    apiKeyInput.addEventListener('change', () => {
+      localStorage.setItem('geminiApiKey', apiKeyInput.value);
+      log('API key saved to localStorage');
+    });
+
+    // Status management
+    function showStatus(message, type) {
+      statusDiv.textContent = message;
+      statusDiv.className = `status ${type}`;
+      statusDiv.style.display = 'block';
+    }
+
+    function hideStatus() {
+      statusDiv.style.display = 'none';
+    }
+
+    // Parse JSON input
+    function parseJSONInput(jsonStr) {
+      log('Starting JSON parsing...');
+      try {
+        const data = JSON.parse(jsonStr);
+        log('JSON parsed successfully', data);
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Le JSON doit être un tableau');
+        }
+        
+        const pageItems = data.map((item, index) => ({
+          titre: item.titre || `Page ${index + 1}`,
+          paroles: item.paroles || '',
+          branche: item.branche || 'SG',
+          ambiance: item.ambiance || 'veillée'
+        }));
+        
+        log(`Parsed ${pageItems.length} pages`, pageItems);
+        return pageItems;
+      } catch (error) {
+        log('JSON parsing error', error);
+        throw new Error(`Erreur de parsing JSON: ${error.message}`);
+      }
+    }
+
+    // Call Gemini API to extract songs from a page
+    async function callGeminiAPI(page, apiKey) {
+      log(`Calling Gemini API for page: ${page.titre}`);
+      
+      const prompt = `Tu es un expert en analyse de chants scouts. Analyse le texte suivant qui contient potentiellement plusieurs chants séparés.
+
+TEXTE À ANALYSER:
+${page.paroles}
+
+INSTRUCTIONS:
+1. Identifie TOUS les chants distincts présents dans ce texte
+2. Pour chaque chant, extrait:
+   - Le titre (si visible, sinon génère "Chant 1", "Chant 2", etc.)
+   - Les paroles complètes nettoyées
+3. Nettoie les paroles:
+   - Supprime les numéros de couplets (1-, 2-, etc.)
+   - Supprime les mentions (bis) et (bis!)
+   - Supprime les espaces multiples sur une même ligne
+   - REMPLACE chaque saut de ligne par la balise exacte /jump/
+   - Exemple: "Vers 1/jump/Vers 2/jump//jump/Couplet 2/jump/Vers 3"
+
+RÉPONDS UNIQUEMENT avec un JSON valide au format suivant (sans backticks, sans texte avant ou après, utilise /jump/ pour les sauts de ligne):
+[{"titre":"Titre du chant 1","paroles":"Vers 1/jump/Vers 2/jump//jump/Couplet 2"},{"titre":"Titre du chant 2","paroles":"Vers 1/jump/Vers 2"}]`;
+
+      log('Prompt prepared', { promptLength: prompt.length });
+
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${apiKey}`;
+      log('API URL prepared (key hidden)', { model: 'gemini-pro-latest' });
+
+      const requestBody = {
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 4096,
+          topP: 0.8,
+          topK: 40
+        }
+      };
+      
+      log('Request body prepared', requestBody);
+
+      try {
+        log('Sending request to Gemini API...');
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        log('Response received', {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          log('API error response', error);
+          
+          // Check for rate limit error
+          if (response.status === 429) {
+            throw new Error(`Rate limit dépassé. Attendez 60 secondes avant de réessayer.`);
+          }
+          
+          throw new Error(`Erreur API Gemini: ${error.error?.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+        log('Response data parsed', data);
+        
+        // Log FULL response for debugging
+        console.log('=== GEMINI FULL RESPONSE ===');
+        console.log('Full data object:', JSON.stringify(data, null, 2));
+        console.log('Candidates:', data.candidates);
+        console.log('Finish Reason:', data.candidates?.[0]?.finishReason);
+        console.log('Safety Ratings:', data.candidates?.[0]?.safetyRatings);
+        console.log('Content:', data.candidates?.[0]?.content);
+        console.log('=== END GEMINI RESPONSE ===');
+        
+        // Check for blocked content
+        if (data.candidates?.[0]?.finishReason === 'SAFETY') {
+          log('Content blocked by safety filters');
+          throw new Error('Contenu bloqué par les filtres de sécurité');
+        }
+        
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        // Log the exact text returned
+        console.log('=== EXACT TEXT FROM GEMINI ===');
+        console.log('Text exists:', !!text);
+        console.log('Text length:', text?.length);
+        console.log('Text content:', text);
+        console.log('=== END TEXT ===');
+        
+        if (!text) {
+          log('No text in response', data);
+          throw new Error('Réponse vide de Gemini API - Le modèle n\'a pas généré de texte');
+        }
+
+        log('Text extracted from response', { textLength: text.length, preview: text.substring(0, 300) });
+
+        // Clean and parse JSON response
+        let jsonText = text.trim();
+        
+        // Remove markdown code blocks
+        jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+        
+        // Remove any text before the first [ or {
+        const jsonStart = Math.min(
+          jsonText.indexOf('[') !== -1 ? jsonText.indexOf('[') : Infinity,
+          jsonText.indexOf('{') !== -1 ? jsonText.indexOf('{') : Infinity
+        );
+        if (jsonStart !== Infinity && jsonStart > 0) {
+          jsonText = jsonText.substring(jsonStart);
+        }
+        
+        // Remove any text after the last ] or }
+        const jsonEnd = Math.max(
+          jsonText.lastIndexOf(']'),
+          jsonText.lastIndexOf('}')
+        );
+        if (jsonEnd !== -1) {
+          jsonText = jsonText.substring(0, jsonEnd + 1);
+        }
+        
+        log('Cleaned JSON text', { cleanedLength: jsonText.length, preview: jsonText.substring(0, 300) });
+        
+        let chants;
+        try {
+          chants = JSON.parse(jsonText);
+        } catch (parseError) {
+          log('JSON parse error, attempting to fix common issues', parseError);
+          
+          // Try to fix common JSON issues
+          jsonText = jsonText
+            .replace(/\n/g, ' ')           // Remove actual newlines in JSON structure
+            .replace(/\r/g, ' ')           // Remove carriage returns
+            .replace(/\t/g, ' ')           // Remove tabs
+            .replace(/,\s*([}\]])/g, '$1') // Remove trailing commas
+            .trim();
+          
+          log('Attempting to parse fixed JSON', { fixedLength: jsonText.length });
+          chants = JSON.parse(jsonText);
+        }
+        
+        log('Chants parsed successfully', chants);
+        
+        // Validate and normalize chants
+        if (!Array.isArray(chants)) {
+          chants = [chants];
+        }
+        
+        // Add branche and ambiance from page, clean paroles
+        const enrichedChants = chants.map((chant, index) => ({
+          titre: chant.titre || `${page.titre} - Chant ${index + 1}`,
+          paroles: (chant.paroles || '')
+            .replace(/\s+/g, ' ')  // Multiple spaces to single
+            .trim(),
+          branche: page.branche,
+          ambiance: page.ambiance
+        }));
+        
+        log(`Extracted ${enrichedChants.length} chants from page "${page.titre}"`, enrichedChants);
+        return enrichedChants;
+        
+      } catch (error) {
+        log('Error in callGeminiAPI', error);
+        throw error;
+      }
+    }
+
+    // Build CSV from chants
+    function buildCSV(chants) {
+      log(`Building CSV from ${chants.length} chants`);
+      
+      const header = 'titre;paroles;branche;ambiance';
+      const rows = chants.map((chant, index) => {
+        // Simple CSV escaping - replace ; with ,
+        const titre = (chant.titre || '').replace(/;/g, ',').trim();
+        const paroles = (chant.paroles || '').replace(/;/g, ',').trim();
+        const branche = (chant.branche || 'SG').replace(/;/g, ',').trim();
+        const ambiance = (chant.ambiance || 'veillée').replace(/;/g, ',').trim();
+        
+        const row = `${titre};${paroles};${branche};${ambiance}`;
+        log(`Row ${index + 1}`, { 
+          titre: chant.titre, 
+          parolesLength: paroles.length,
+          hasJumpTag: paroles.includes('/jump/')
+        });
+        return row;
+      });
+      
+      const csv = [header, ...rows].join('\n');
+      log('CSV built successfully', { totalLines: rows.length + 1, csvLength: csv.length });
+      return csv;
+    }
+
+    // Download CSV
+    function downloadCSV(csvContent) {
+      log('Downloading CSV', { csvLength: csvContent.length });
+      
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      const filename = `chants_${Date.now()}.csv`;
+      log('CSV filename', filename);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+      log('CSV download triggered successfully');
+    }
+
+    // Main conversion process
+    async function convertJSON() {
+      log('=== STARTING CONVERSION PROCESS ===');
+      
+      try {
+        hideStatus();
+        
+        // Validate inputs
+        const apiKey = apiKeyInput.value.trim();
+        log('API Key validation', { hasKey: !!apiKey, keyLength: apiKey.length });
+        
+        if (!apiKey) {
+          showStatus('❌ Veuillez saisir votre clé API Gemini', 'error');
+          return;
+        }
+        
+        const jsonStr = jsonInput.value.trim();
+        log('JSON input validation', { hasJSON: !!jsonStr, jsonLength: jsonStr.length });
+        
+        if (!jsonStr) {
+          showStatus('❌ Veuillez saisir un JSON', 'error');
+          return;
+        }
+        
+        // Parse JSON
+        showStatus('📖 Parsing du JSON...', 'info');
+        state.pageItems = parseJSONInput(jsonStr);
+        
+        if (state.pageItems.length === 0) {
+          log('No pages found in JSON');
+          showStatus('❌ Aucune page trouvée dans le JSON', 'error');
+          return;
+        }
+        
+        log(`Found ${state.pageItems.length} pages to process`);
+        
+        // Show loading
+        loadingDiv.style.display = 'block';
+        convertBtn.disabled = true;
+        
+        // Process each page with Gemini
+        state.chantItems = [];
+        let processedPages = 0;
+        
+        for (const page of state.pageItems) {
+          log(`--- Processing page ${processedPages + 1}/${state.pageItems.length}: ${page.titre} ---`);
+          showStatus(`🔍 Analyse de "${page.titre}" avec Gemini AI...`, 'info');
+          
+          try {
+            const chants = await callGeminiAPI(page, apiKey);
+            log(`Successfully extracted ${chants.length} chants from page "${page.titre}"`);
+            
+            state.chantItems.push(...chants);
+            processedPages++;
+            
+            pagesCount.textContent = processedPages;
+            chantsCount.textContent = state.chantItems.length;
+            statsDiv.style.display = 'grid';
+            
+            log(`Progress: ${processedPages}/${state.pageItems.length} pages, ${state.chantItems.length} total chants`);
+            
+            // Longer delay to avoid rate limiting (Gemini free tier: 2 req/min)
+            const delayMs = 35000; // 35 seconds between requests for safety
+            log(`Waiting ${delayMs}ms before next request to avoid rate limit...`);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            log('Rate limit delay completed');
+            
+          } catch (error) {
+            log(`ERROR processing page "${page.titre}"`, error);
+            console.error(`Erreur sur page "${page.titre}":`, error);
+            showStatus(`⚠️ Erreur sur "${page.titre}": ${error.message}`, 'error');
+            
+            // If rate limit error, wait 60 seconds
+            if (error.message.includes('Rate limit') || error.message.includes('quota')) {
+              log('Rate limit hit, waiting 65 seconds...');
+              showStatus(`⏳ Rate limit atteint, attente de 65 secondes...`, 'info');
+              await new Promise(resolve => setTimeout(resolve, 65000));
+            } else {
+              // Wait a bit before continuing for other errors
+              await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+          }
+        }
+        
+        // Build CSV
+        if (state.chantItems.length === 0) {
+          log('No chants extracted after processing all pages');
+          showStatus('❌ Aucun chant extrait', 'error');
+          return;
+        }
+        
+        log('Building final CSV...');
+        state.csvContent = buildCSV(state.chantItems);
+        
+        // Show preview
+        csvPreview.textContent = state.csvContent;
+        previewSection.style.display = 'block';
+        log('CSV preview displayed');
+        
+        // Enable download
+        downloadBtn.disabled = false;
+        
+        const successMessage = `✅ Conversion réussie ! ${state.chantItems.length} chants extraits de ${processedPages} pages`;
+        log(successMessage);
+        showStatus(successMessage, 'success');
+        
+        log('=== CONVERSION PROCESS COMPLETED SUCCESSFULLY ===');
+        
+      } catch (error) {
+        log('CRITICAL ERROR in conversion process', error);
+        showStatus(`❌ Erreur: ${error.message}`, 'error');
+        console.error('Conversion error:', error);
+      } finally {
+        loadingDiv.style.display = 'none';
+        convertBtn.disabled = false;
+        log('Cleanup completed');
+      }
+    }
+
+    // Event listeners
+    convertBtn.addEventListener('click', () => {
+      log('Convert button clicked');
+      convertJSON();
+    });
+    
+    downloadBtn.addEventListener('click', () => {
+      log('Download button clicked');
+      if (state.csvContent) {
+        downloadCSV(state.csvContent);
+        showStatus('✅ CSV téléchargé avec succès !', 'success');
+      } else {
+        log('No CSV content to download');
+      }
+    });
+    
+    log('Application initialized successfully');
+  </script>
+</body>
+</html>
